@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gwen - Asistente Virtual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .voice-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .voice-indicator {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .voice-indicator.listening {
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .voice-indicator.active {
+            background: #4CAF50;
+            color: white;
+            animation: bounce 0.5s;
+        }
+
+        .voice-indicator.recording {
+            background: #f44336;
+            color: white;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .control-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+
+        .control-btn.stop {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-text {
+            color: white;
+            font-size: 20px;
+            margin-top: 20px;
+            min-height: 30px;
+            font-weight: 500;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+        }
+
+        .info-box ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .info-box li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .inventory-section {
+            margin-top: 30px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card.low-stock {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .product-stock {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .activities-section {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 10px 15px;
+            border-left: 3px solid #667eea;
+            margin-bottom: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .activity-item:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Gwen - Asistente Virtual</h1>
+        <p class="subtitle">Gestión de inventario por voz para tu tienda de barrio</p>
+
+        <div class="voice-section">
+            <div class="voice-indicator" id="voiceIndicator">🎤</div>
+            <button class="control-btn" id="controlBtn" onclick="toggleVoiceSystem()">
+                🚀 Iniciar Sistema de Voz
+            </button>
+            <div class="status-text" id="statusText">
+                Presiona el botón para comenzar
+            </div>
+            
+            <div class="info-box">
+                <strong>📖 Cómo usar:</strong>
+                <ul>
+                    <li>Di "Gwen" o "Gen" para activar (pronuncia claramente)</li>
+                    <li>Ejemplo: "Gwen, agrega 10 galletas"</li>
+                    <li>Ejemplo: "Gen, vendí 5 leches"</li>
+                    <li>Ejemplo: "Gwen, actualiza arroz a 20"</li>
+                    <li>💡 También funciona: "Bueno", "Guen", "Wen"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <div class="inventory-section">
+                <h2>📦 Inventario</h2>
+                <div class="inventory-grid" id="inventoryGrid"></div>
+            </div>
+
+            <div class="activities-section">
+                <h2>📋 Actividades Recientes</h2>
+                <div id="activitiesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isSystemActive = false;
+        let pollInterval = null;
+
+        async function toggleVoiceSystem() {
+            const btn = document.getElementById('controlBtn');
+            const indicator = document.getElementById('voiceIndicator');
+            const statusText = document.getElementById('statusText');
+
+            if (!isSystemActive) {
+                // Iniciar sistema
+                try {
+                    statusText.textContent = '⏳ Iniciando sistema...';
+                    
+                    const response = await fetch('/api/start-voice-system', {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        isSystemActive = true;
+                        btn.textContent = '🛑 Detener Sistema';
+                        btn.classList.add('stop');
+                        indicator.classList.add('listening');
+                        statusText.textContent = '👂 Escuchando "Gwen"...';
+                        
+                        console.log('✅ Sistema de voz iniciado correctamente');
+                        
+                        // Actualizar inventario cada 2 segundos
+                        pollInterval = setInterval(() => {
+                            loadInventory();
+                            loadActivities();
+                        }, 2000);
+                        
+                        loadInventory();
+                        loadActivities();
+                    } else {
+                        statusText.textContent = '❌ Error al iniciar';
+                        alert('Error: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('❌ Error iniciando sistema:', error);
+                    statusText.textContent = '❌ Error de conexión';
+                    alert('Error al iniciar el sistema de voz. Verifica la consola.');
+                }
+            } else {
+                // Detener sistema
+                try {
+                    const response = await fetch('/api/stop-voice-system', {
+                        method: 'POST'
+                    });
+
+                    isSystemActive = false;
+                    btn.textContent = '🚀 Iniciar Sistema de Voz';
+                    btn.classList.remove('stop');
+                    indicator.classList.remove('listening', 'active', 'recording');
+                    statusText.textContent = '🔇 Sistema detenido';
+                    
+                    if (pollInterval) {
+                        clearInterval(pollInterval);
+                    }
+                    
+                    console.log('Sistema de voz detenido');
+                } catch (error) {
+                    console.error('Error deteniendo sistema:', error);
+                }
+            }
+        }
+
+        async function loadInventory() {
+            try {
+                const response = await fetch('/api/inventory');
+                const inventory = await response.json();
+                
+                const grid = document.getElementById('inventoryGrid');
+                grid.innerHTML = '';
+                
+                inventory.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    if (product.stock <= product.minStock) {
+                        card.classList.add('low-stock');
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-stock">📦 Stock: ${product.stock} unidades</div>
+                        <div class="product-stock" style="font-size: 12px; color: #999;">⚠️ Mínimo: ${product.minStock}</div>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error cargando inventario:', error);
+            }
+        }
+
+        async function loadActivities() {
+            try {
+                const response = await fetch('/api/activities');
+                const activities = await response.json();
+                
+                const list = document.getElementById('activitiesList');
+                list.innerHTML = '';
+                
+                if (activities.length === 0) {
+                    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No hay actividades recientes</p>';
+                    return;
+                }
+                
+                activities.slice(0, 10).forEach(activity => {
+                    const item = document.createElement('div');
+                    item.className = 'activity-item';
+                    item.innerHTML = `
+                        <div class="activity-time">🕐 ${activity.time}</div>
+                        <div>${activity.text}</div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error cargando actividades:', error);
+            }
+        }
+
+        // Cargar datos iniciales
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Página cargada - Gwen lista');
+            loadInventory();
+            loadActivities();
+        });
+    </script>
+</body>
+</html>
