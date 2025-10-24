@@ -369,7 +369,9 @@
 
 .full-history-list::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
-}/* === BASE GENERAL GWEN === */
+}
+
+/* === BASE GENERAL GWEN === */
 * {
     margin: 0;
     padding: 0;
@@ -472,7 +474,7 @@ h1 {
 }
 
 .voice-indicator.listening {
-    animation: pulse 1.5s infinite;
+    animation: pulse-voice 1.5s infinite;
     box-shadow: 0 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
@@ -485,10 +487,10 @@ h1 {
 .voice-indicator.recording {
     background: #f44336;
     color: white;
-    animation: pulse 0.8s infinite;
+    animation: pulse-voice 0.8s infinite;
 }
 
-@keyframes pulse {
+@keyframes pulse-voice {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
 }
@@ -985,4 +987,32 @@ h1 {
 .full-activities-section::-webkit-scrollbar-thumb:hover,
 .home-activities::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+/* === ANIMACIONES PARA FILTROS POR VOZ === */
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    50% { 
+        transform: scale(1.02); 
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+}
+
+/* Resaltar cuando se aplican filtros por voz */
+.voice-filtered {
+    animation: pulse 0.5s ease-in-out;
+    border: 3px solid #667eea !important;
+}
+
+/* Mejorar visibilidad del campo de fecha específica */
+#specificDate {
+    transition: all 0.3s ease;
+}
+
+#specificDate:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }

@@ -31,11 +31,11 @@
             <div class="info-box">
                 <strong>📖 Cómo usar:</strong>
                 <ul>
-                    <li>Di "Gwen" o "Gen" para activar (pronuncia claramente)</li>
+                    <li>Di "Gwen" para activar</li>
                     <li>Ejemplo: "Gwen, agrega 10 galletas"</li>
-                    <li>Ejemplo: "Gen, vendí 5 leches"</li>
-                    <li>Ejemplo: "Gwen, actualiza arroz a 20"</li>
-                    <li>💡 También funciona: "Bueno", "Guen", "Wen"</li>
+                    <li>Ejemplo: "Gwen, muéstrame las salidas del 13 de octubre"</li>
+                    <li>Ejemplo: "Gwen, ver ventas de leche"</li>
+                    <li>Ejemplo: "Gwen, mostrar entradas de hoy"</li>
                 </ul>
             </div>
         </div>
@@ -124,7 +124,13 @@
                                 <option value="today">Hoy</option>
                                 <option value="week">Última semana</option>
                                 <option value="month">Último mes</option>
+                                <option value="specific">Fecha específica</option>
                             </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="specificDate">📆 Fecha Específica</label>
+                            <input type="text" id="specificDate" placeholder="DD/MM/YYYY" oninput="applyFilters()" style="display:none;">
                         </div>
 
                         <div class="filter-group">
@@ -180,6 +186,24 @@
         let pollInterval = null;
         let allActivities = [];
         let filteredActivities = [];
+        let currentVoiceFilters = null; // Almacenar filtros aplicados por voz
+
+        // Mostrar/ocultar campo de fecha específica
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterDate = document.getElementById('filterDate');
+            const specificDate = document.getElementById('specificDate');
+            
+            if (filterDate) {
+                filterDate.addEventListener('change', function() {
+                    if (this.value === 'specific') {
+                        specificDate.style.display = 'block';
+                    } else {
+                        specificDate.style.display = 'none';
+                        specificDate.value = '';
+                    }
+                });
+            }
+        });
 
         // Sistema de pestañas
         function openTab(tabName) {
@@ -225,7 +249,19 @@
                         indicator.classList.add('listening');
                         statusText.textContent = '👂 Escuchando "Gwen"...';
 
-                        pollInterval = setInterval(() => {
+                        // POLLING MEJORADO: Verificar comandos de navegación
+                        pollInterval = setInterval(async () => {
+                            // Verificar si hay comandos con filtros pendientes
+                            const cmdResponse = await fetch('/api/get-last-command');
+                            const cmdData = await cmdResponse.json();
+
+                            // ---------- AUTO-FILTROS POR VOZ ----------
+                            if (cmdData.fresh && cmdData.filters) {
+                                console.log("🎤 Filtros de voz frescos:", cmdData.filters);
+                                applyVoiceFilters(cmdData.filters);
+                                await fetch('/api/consume-filters', {method: 'POST'});
+                            }
+                            
                             const activeTab = document.querySelector('.tab-content.active').id;
                             if (activeTab === 'home-tab') {
                                 loadHomeDashboard();
@@ -261,6 +297,153 @@
                     console.error('Error deteniendo sistema:', error);
                 }
             }
+        }
+
+        
+        // NUEVA FUNCIÓN: Aplicar filtros desde comando de voz - MEJORADA
+        function applyVoiceFilters(filters) {
+            console.log('🎤 Aplicando filtros por voz:', filters);
+            
+            // Forzar cambio a la pestaña de inventario
+            if (filters.open_tab === 'inventory-tab') {
+                console.log('📁 Cambiando a pestaña Inventario...');
+                const inventoryTab = document.querySelector('[onclick*="inventory-tab"]');
+                if (inventoryTab) {
+                    inventoryTab.click();
+                    console.log('✅ Pestaña Inventario activada');
+                } else {
+                    // Fallback: usar la función openTab directamente
+                    openTab('inventory-tab');
+                    console.log('✅ Pestaña Inventario activada (fallback)');
+                }
+            }
+            
+            // Esperar a que la pestaña se cargue completamente
+            setTimeout(() => {
+                console.log('🔧 Configurando filtros...');
+                
+                let filtersApplied = false;
+                
+                // Aplicar tipo de acción
+                if (filters.type && filters.type !== 'all') {
+                    const typeSelect = document.getElementById('filterType');
+                    if (typeSelect) {
+                        typeSelect.value = filters.type;
+                        console.log(`✅ Filtro tipo: ${filters.type}`);
+                        filtersApplied = true;
+                    }
+                }
+                
+                // Aplicar producto - MEJORADO
+                if (filters.product && filters.product !== 'all') {
+                    const productSelect = document.getElementById('filterProduct');
+                    if (productSelect) {
+                        // Buscar coincidencia exacta primero
+                        let found = false;
+                        for (let option of productSelect.options) {
+                            if (option.value.toLowerCase() === filters.product.toLowerCase()) {
+                                productSelect.value = option.value;
+                                console.log(`✅ Producto filtrado: ${option.value}`);
+                                found = true;
+                                filtersApplied = true;
+                                break;
+                            }
+                        }
+                        
+                        // Si no encuentra coincidencia exacta, buscar parcial
+                        if (!found) {
+                            for (let option of productSelect.options) {
+                                if (option.value.toLowerCase().includes(filters.product.toLowerCase()) || 
+                                    filters.product.toLowerCase().includes(option.value.toLowerCase())) {
+                                    productSelect.value = option.value;
+                                    console.log(`✅ Producto filtrado (parcial): ${option.value}`);
+                                    filtersApplied = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Aplicar fecha - MEJORADO
+                if (filters.date && filters.date !== 'all') {
+                    const filterDateSelect = document.getElementById('filterDate');
+                    const specificDateInput = document.getElementById('specificDate');
+                    
+                    if (filterDateSelect) {
+                        if (filters.date === 'specific' && filters.specific_date) {
+                            filterDateSelect.value = 'specific';
+                            if (specificDateInput) {
+                                specificDateInput.style.display = 'block';
+                                specificDateInput.value = filters.specific_date;
+                            }
+                            console.log(`✅ Fecha específica: ${filters.specific_date}`);
+                        } else {
+                            filterDateSelect.value = filters.date;
+                            if (specificDateInput) {
+                                specificDateInput.style.display = 'none';
+                            }
+                            console.log(`✅ Filtro fecha: ${filters.date}`);
+                        }
+                        filtersApplied = true;
+                    }
+                }
+                
+                // EJECUTAR FILTROS SI SE APLICÓ ALGUNO
+                if (filtersApplied) {
+                    console.log('🎯 Aplicando filtros...');
+                    setTimeout(() => {
+                        applyFilters();
+                        
+                        // Resaltar visualmente
+                        const historySection = document.querySelector('.history-section');
+                        if (historySection) {
+                            historySection.style.border = '3px solid #667eea';
+                            historySection.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
+                            historySection.style.transition = 'all 0.5s ease';
+                            
+                            setTimeout(() => {
+                                historySection.style.border = '2px solid #e9ecef';
+                                historySection.style.boxShadow = 'none';
+                            }, 3000);
+                        }
+                        
+                        // Mostrar notificación
+                        showFilterNotification('Filtros aplicados por voz');
+                        
+                    }, 800); // Dar más tiempo para que los selects se actualicen
+                } else {
+                    console.log('ℹ️ No se aplicaron filtros específicos');
+                    applyFilters(); // Aplicar filtros por defecto
+                }
+                
+            }, 1000); // Aumentar tiempo de espera para asegurar carga
+        }
+
+        // FUNCIÓN AUXILIAR: Mostrar notificación de filtros
+        function showFilterNotification(message) {
+            // Crear notificación temporal
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #667eea;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: bold;
+                animation: slideIn 0.5s ease;
+            `;
+            notification.textContent = `🎯 ${message}`;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         // NUEVA FUNCIÓN: Cargar inventario completo con historial
@@ -299,7 +482,7 @@
 
                     card.innerHTML = `
                         <div class="product-name">${product.name}</div>
-                        <div class="product-category">📁 ${product.category}</div>
+                        <div class="product-category">🏷️ ${product.category}</div>
                         <div class="product-stock">📦 Stock: ${product.stock} unidades</div>
                         <div class="product-stock-bar">
                             <div class="stock-bar-fill ${product.stock <= product.minStock ? 'low' : 'good'}" 
@@ -346,6 +529,9 @@
 
                 document.getElementById('totalMovements').textContent = allActivities.length;
 
+                // Actualizar el filtro de productos con todos los productos disponibles
+                updateProductFilter();
+                
                 applyFilters();
             } catch (error) {
                 console.error('Error cargando historial:', error);
@@ -357,7 +543,16 @@
             const filterType = document.getElementById('filterType').value;
             const filterProduct = document.getElementById('filterProduct').value;
             const filterDate = document.getElementById('filterDate').value;
+            const specificDate = document.getElementById('specificDate').value;
             const searchText = document.getElementById('searchHistory').value.toLowerCase();
+
+            console.log('🔍 Aplicando filtros:', {
+                type: filterType,
+                product: filterProduct,
+                date: filterDate,
+                specificDate: specificDate,
+                search: searchText
+            });
 
             filteredActivities = allActivities.filter(activity => {
                 // Filtro por tipo
@@ -389,6 +584,12 @@
                         if (activityDate < monthAgo) {
                             return false;
                         }
+                    } else if (filterDate === 'specific' && specificDate) {
+                        // Comparar fecha específica (formato DD/MM/YYYY)
+                        const activityDateStr = activity.date; // Ya está en formato DD/MM/YYYY
+                        if (activityDateStr !== specificDate) {
+                            return false;
+                        }
                     }
                 }
 
@@ -402,7 +603,43 @@
 
             displayFilteredHistory();
         }
+        function applyVoiceFilters(filters) {
+        // 1. Reset filtros
+        document.getElementById('filterType').value      = 'all';
+        document.getElementById('filterProduct').value   = 'all';
+        document.getElementById('filterDate').value      = 'all';
+        document.getElementById('specificDate').value    = '';
+        document.getElementById('specificDate').style.display = 'none';
 
+        // 2. Cambiar pestaña ANTES de aplicar (sin evento)
+        if (filters.open_tab === 'inventory-tab') {
+            // Contenido
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById('inventory-tab').classList.add('active');
+            // Botón
+            document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
+            document.querySelector('[onclick*="inventory-tab"]').classList.add('active');
+        }
+
+        // 3. Aplicar valores que vengan del servidor
+        if (filters.type  && filters.type  !== 'all')
+            document.getElementById('filterType').value = filters.type;
+
+        if (filters.product && filters.product !== 'all')
+            document.getElementById('filterProduct').value = filters.product;
+
+        if (filters.date) {
+            document.getElementById('filterDate').value = filters.date;
+            if (filters.date === 'specific' && filters.specific_date) {
+                document.getElementById('specificDate').style.display = 'block';
+                document.getElementById('specificDate').value = filters.specific_date;
+            }
+        }
+
+        // 4. Filtrar y listo
+        applyFilters();
+    }
+         
         // Mostrar historial filtrado
         function displayFilteredHistory() {
             const list = document.getElementById('fullHistoryList');
@@ -464,6 +701,8 @@
             document.getElementById('filterType').value = 'all';
             document.getElementById('filterProduct').value = 'all';
             document.getElementById('filterDate').value = 'all';
+            document.getElementById('specificDate').value = '';
+            document.getElementById('specificDate').style.display = 'none';
             document.getElementById('searchHistory').value = '';
             applyFilters();
         }
@@ -559,7 +798,7 @@
                         <div class="interactive-badge">🎯 ACTIVO</div>
                         <div class="product-name">${product.name}</div>
                         <div class="product-category">
-                            📁 ${product.category}
+                            🏷️ ${product.category}
                         </div>
                         <div class="product-stock-info">
                             <div class="stock-main">📦 Stock: <strong>${product.stock}</strong> unidades</div>
