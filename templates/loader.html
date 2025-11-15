@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gwen - Cargando</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/loader.css') }}">
+</head>
+<body>
+  <div class="loader-container">
+    <div class="logo-circle">
+    <img src="{{ url_for('static', filename='imagenes/gwen_logo_butterfly.png') }}" alt="Gwen Logo">
+    </div>
+    <div class="name">Gwen</div>
+    <div class="dots"></div>
+  </div>
+
+  <script>
+    // Fuerza que el loader se vea siempre antes de ir a /gwen
+    if (window.location.pathname !== "/") {
+      window.location.replace("/");
+    } else {
+      setTimeout(() => {
+        window.location.href = '/welcome';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

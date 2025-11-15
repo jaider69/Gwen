@@ -1,0 +1,59 @@
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #6e9dbf, #a48cf4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+}
+
+.loader-container {
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+
+
+.logo-butterfly {
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+}
+
+.name {
+  margin-top: 20px;
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 6px;
+  color: white;
+  text-transform: uppercase;
+  font-family: 'Helvetica Neue', 'Segoe UI', sans-serif;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dots {
+  margin-top: 10px;
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+  animation: dots 1.5s infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+.dots::after {
+  content: '...';
+  animation: dots 1.5s infinite;
+}

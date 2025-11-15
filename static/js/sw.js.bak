@@ -1,0 +1,135 @@
+// static/js/sw.js - Service Worker para Gwen MEJORADO
+console.log('🔧 Service Worker de Gwen cargado correctamente');
+
+self.addEventListener('push', function(event) {
+    console.log('📨 Push recibido:', event);
+    
+    let notificationData = {
+        title: 'Gwen - Alerta de Stock',
+        message: 'Nueva notificación de stock',
+        type: 'system',
+        urgency: 'normal',
+        timestamp: Date.now()
+    };
+    
+    try {
+        if (event.data) {
+            notificationData = { ...notificationData, ...event.data.json() };
+        }
+    } catch(e) {
+        console.warn('⚠️ No se pudo parsear data como JSON, usando texto plano');
+        if (event.data) {
+            notificationData.message = event.data.text();
+        }
+    }
+    
+    console.log('📋 Datos de notificación:', notificationData);
+    
+    // Configuración MEJORADA para notificaciones más persistentes
+    const options = {
+        body: notificationData.message,
+        icon: '/static/icon.png',
+        badge: '/static/badge.png',
+        image: '/static/icon.png', // Imagen adicional
+        vibrate: [200, 100, 200, 100, 200, 100, 200], // Vibración más larga
+        data: {
+            dateOfArrival: Date.now(),
+            product_id: notificationData.product_id || null,
+            urgency: notificationData.urgency || 'normal',
+            url: '/gwen#notifications-tab'
+        },
+        actions: [
+            {
+                action: 'view',
+                title: '📊 Ver en Gwen',
+                icon: '/static/icon.png'
+            },
+            {
+                action: 'dismiss',
+                title: '❌ Descartar',
+                icon: '/static/badge.png'
+            }
+        ],
+        tag: `gwen-stock-${notificationData.product_id || 'system'}`,
+        requireInteraction: true, // Requiere interacción del usuario
+        renotify: true,
+        silent: false, // Hacer sonido
+        sound: '/static/notification.mp3', // Si tienes archivo de sonido
+        sticky: true, // Más persistente
+        priority: 'high' // Alta prioridad
+    };
+    
+    // Configuración específica por urgencia
+    if (notificationData.urgency === '🚨 AGOTADO') {
+        options.vibrate = [500, 200, 500, 200, 500];
+        options.requireInteraction = true;
+    } else if (notificationData.urgency === '🔴 URGENTE') {
+        options.vibrate = [300, 100, 300, 100, 300];
+        options.requireInteraction = true;
+    }
+    
+    event.waitUntil(
+        self.registration.showNotification(notificationData.title, options)
+            .then(() => console.log('✅ Notificación mostrada exitosamente'))
+            .catch(err => console.error('❌ Error mostrando notificación:', err))
+    );
+});
+
+self.addEventListener('notificationclick', function(event) {
+    console.log('📱 Notificación clickeada:', event);
+    
+    event.notification.close();
+    
+    if (event.action === 'view') {
+        event.waitUntil(
+            clients.matchAll({type: 'window'}).then(windowClients => {
+                // Buscar si ya hay una ventana abierta
+                for (let client of windowClients) {
+                    if (client.url.includes('/gwen') && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // Si no hay ventana abierta, abrir una nueva
+                if (clients.openWindow) {
+                    return clients.openWindow('/gwen#notifications-tab');
+                }
+            })
+        );
+    } else if (event.action === 'dismiss') {
+        console.log('🗑️ Notificación descartada');
+    } else {
+        // Click en el cuerpo de la notificación
+        event.waitUntil(
+            clients.openWindow('/gwen#notifications-tab')
+        );
+    }
+});
+
+self.addEventListener('pushsubscriptionchange', function(event) {
+    console.log('🔄 Suscripción push cambiada:', event);
+    
+    event.waitUntil(
+        self.registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: event.oldSubscription.options.applicationServerKey
+        }).then(function(newSubscription) {
+            // Re-enviar la nueva suscripción al servidor
+            console.log('🔄 Nueva suscripción:', newSubscription);
+            return fetch('/api/notifications/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subscription: newSubscription })
+            });
+        })
+    );
+});
+
+self.addEventListener('install', function(event) {
+    console.log('✅ Service Worker instalado - forzando activación');
+    self.skipWaiting(); // Activar inmediatamente
+});
+
+self.addEventListener('activate', function(event) {
+    console.log('✅ Service Worker activado - tomando control');
+    event.waitUntil(self.clients.claim()); // Tomar control inmediato de todas las pestañas
+});

@@ -1,0 +1,289 @@
+/* static/css/landing.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.landing-container {
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+    max-width: 500px;
+    width: 100%;
+}
+
+.logo-section {
+    margin-bottom: 25px;
+}
+
+.logo {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: logoFloat 3s ease-in-out infinite;
+    overflow: hidden;
+    background: white;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.brand-name {
+    font-size: 44px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.tagline {
+    font-size: 17px;
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 30px;
+    line-height: 1.5;
+    font-weight: 300;
+    padding: 0 15px;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.btn {
+    padding: 14px 35px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-primary {
+    background: #00d4ff;
+    color: #1a1a2e;
+    box-shadow: 0 6px 16px rgba(0,212,255,0.3);
+}
+
+.btn-primary:hover {
+    background: #00b8e6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,212,255,0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255,255,255,0.2);
+}
+
+.footer {
+    text-align: center;
+    padding: 18px 20px;
+    background: rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.footer-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.footer-link:hover {
+    color: #00d4ff;
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #00d4ff;
+    transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .brand-name {
+        font-size: 38px;
+    }
+    
+    .tagline {
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+    
+    .logo {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 15px;
+    }
+    
+    .logo img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .btn {
+        padding: 13px 30px;
+        font-size: 15px;
+    }
+    
+    .buttons-container {
+        max-width: 320px;
+        gap: 10px;
+    }
+    
+    .footer {
+        padding: 15px 20px;
+    }
+    
+    .footer-text {
+        font-size: 11px;
+    }
+    
+    .footer-link {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-name {
+        font-size: 34px;
+    }
+    
+    .tagline {
+        font-size: 15px;
+    }
+    
+    .logo {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .logo img {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@media (max-height: 700px) {
+    .logo {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 15px;
+    }
+    
+    .logo img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .brand-name {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+    
+    .tagline {
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .logo-section {
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        padding: 12px 30px;
+    }
+    
+    .footer {
+        padding: 12px 15px;
+    }
+}

@@ -7,17 +7,32 @@ class WakeWordManager {
         this.audioInteracted = false;
         this.lastDetectionTime = 0;
         this.detectionCooldown = 3000; // 3 segundos entre detecciones
+
+        // ⭐ WAKE WORDS RESTRINGIDAS (solo estas 6)
+        this.wakeWords = new Set([
+            'wen',
+            'gwen', 
+            'gueen',
+            'genn',
+            'uen',
+            'bueno'
+        ]);
+
+        // ⭐ COMANDOS COMPUESTOS ESPECIALES
+        this.compoundCommands = {
+            'gendy': 'vendí',
+            'wendy': 'vendí',
+            'gwendi': 'vendí',
+            'gendi': 'vendí'
+        };
     }
 
     async startListening() {
         try {
-            console.log("🚀 INICIANDO SISTEMA DE WAKE WORD MEJORADO...");
+            console.log("🚀 INICIANDO SISTEMA DE WAKE WORD ACTUALIZADO...");
             this.updateUI('🔄 Iniciando sistema...', 'loading');
 
-            // Mostrar consejos de uso
             this.showVoiceTips();
-            
-            // Verificar permisos de audio primero
             await this.ensureAudioPermissions();
             
             this.serverAvailable = await this.checkServer();
@@ -38,16 +53,15 @@ class WakeWordManager {
 
     showVoiceTips() {
         console.log("🎧 CONSEJOS PARA MEJOR DETECCIÓN:");
-        console.log("💡 Habla en un entorno tranquilo");
-        console.log("💡 Di 'Gwen' seguido inmediatamente de tu comando");
-        console.log("💡 Ejemplo: 'Gwen agrega 10 latas de atún'");
+        console.log("💡 Di wake word + comando juntos");
+        console.log("💡 Ejemplo: 'Gwen vendí 5 galletas'");
+        console.log("💡 Rápido: 'Gendy 3 leches' = 'Gwen vendí 3 leches'");
         console.log("💡 Habla claro y a velocidad normal");
-        console.log("💡 Mantén el micrófono a 10-20 cm de tu boca");
+        console.log("💡 Wake words: wen, gwen, gueen, genn, uen, bueno");
     }
 
     async ensureAudioPermissions() {
         try {
-            // Solicitar permisos de audio silenciosamente
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 audio: {
                     echoCancellation: true,
@@ -57,10 +71,9 @@ class WakeWordManager {
             });
             stream.getTracks().forEach(track => track.stop());
             this.audioInteracted = true;
-            console.log("✅ Permisos de audio concedidos con optimizaciones");
+            console.log("✅ Permisos de audio concedidos");
         } catch (error) {
             console.warn("⚠️ Permisos de audio no concedidos:", error);
-            // No bloquear si no hay permisos, seguir igual
         }
     }
 
@@ -88,7 +101,7 @@ class WakeWordManager {
             if (data.success) {
                 this.isListening = true;
                 this.startServerCheck();
-                this.updateUI('🎯 Escuchando... Di "GWEN"', 'listening');
+                this.updateUI('🎯 Escuchando... Di wake word + comando', 'listening');
                 console.log("✅ WAKE WORD DEL SERVIDOR ACTIVADO");
                 return true;
             } else {
@@ -114,12 +127,12 @@ class WakeWordManager {
             this.recognition.continuous = true;
             this.recognition.interimResults = true;
             this.recognition.lang = 'es-ES';
-            this.recognition.maxAlternatives = 3; // Aumentado para mejores resultados
+            this.recognition.maxAlternatives = 3;
 
             this.recognition.onstart = () => {
                 this.isListening = true;
-                this.updateUI('🎯 Escuchando localmente... Di "GWEN"', 'listening');
-                console.log("✅ WAKE WORD LOCAL ACTIVADO CON DETECCIÓN MEJORADA");
+                this.updateUI('🎯 Escuchando... Di wake word + comando', 'listening');
+                console.log("✅ WAKE WORD LOCAL ACTIVADO");
             };
 
             this.recognition.onresult = (event) => {
@@ -128,15 +141,14 @@ class WakeWordManager {
                         const transcript = event.results[i][0].transcript.toLowerCase();
                         const confidence = event.results[i][0].confidence;
                         
-                        console.log(`🔍 Texto detectado: "${transcript}" (confianza: ${confidence})`);
+                        console.log(`🔊 Detectado: "${transcript}" (conf: ${confidence.toFixed(2)})`);
                         
                         // Procesar todas las alternativas
                         for (let j = 0; j < event.results[i].length; j++) {
                             const alternative = event.results[i][j].transcript.toLowerCase();
-                            console.log(`   Alternativa ${j}: "${alternative}"`);
                             
-                            if (this.detectWakeWord(alternative)) {
-                                console.log("🎯 ¡GWEN DETECTADO LOCALMENTE!");
+                            if (this.detectWakeWordWithCommand(alternative)) {
+                                console.log("🎯 ¡WAKE WORD + COMANDO DETECTADO!");
                                 this.onWakeWordDetected();
                                 break;
                             }
@@ -152,7 +164,6 @@ class WakeWordManager {
                     this.updateUI('❌ Permiso de micrófono denegado', 'error');
                     this.isListening = false;
                 } else {
-                    // Reintentar automáticamente
                     setTimeout(() => {
                         if (this.isListening) {
                             this.recognition.start();
@@ -183,94 +194,162 @@ class WakeWordManager {
         }
     }
 
-    detectWakeWord(text) {
-        // Verificar cooldown para evitar detecciones múltiples
+    detectWakeWordWithCommand(text) {
+        // Verificar cooldown
         const now = Date.now();
         if (now - this.lastDetectionTime < this.detectionCooldown) {
             console.log('⏳ En cooldown, ignorando...');
             return false;
         }
 
-        // VARIANTES EXPANDIDAS MEJORADAS
-        const wakeWords = [
-            'gwen', 'guen', 'wen', 'buen', 'güen', 'gween', 'guenn',
-            // Variantes que el reconocimiento confunde - EXPANDIDAS
-            'wendy', 'when', 'wenn', 'wend', 'guan', 'güenn', 'buenn',
-            'wen di', 'when di', 'wendi', 'guendi', 'güendi', 'wenti',
-            'guenti', 'huen', 'güen', 'güenn', 'güendi', 'güenti', 
-            'güenny', 'wén', 'guén', 'buén', 'güén', 'weni', 'gueni',
-            'bwen', 'gwenn', 'wenn', 'bwén', 'gwén', 'wénn'
-        ];
-        
         const textLower = text.toLowerCase().trim();
-        
-        console.log(`🔍 Frontend analizando: "${textLower}"`);
-        
-        // Buscar coincidencias directas
-        const directMatch = wakeWords.some(word => {
-            // Buscar palabra completa o como inicio de palabra
-            return textLower.includes(word) || 
-                   textLower.split(' ').some(w => w.startsWith(word));
-        });
-        
-        if (directMatch) {
-            console.log('🎯 Wake word detectada por coincidencia directa');
-            this.lastDetectionTime = now;
-            return true;
-        }
-        
-        // Detección por sonido similar MEJORADA
-        const words = textLower.split(' ');
-        for (let word of words) {
-            if (word.length >= 2) { // Reducido a 2 caracteres mínimo
-                // Palabras que comienzan con w/g/b/gu/gw/bu y tienen "en" o sonidos similares
-                const startsWithSound = word.startsWith('w') || word.startsWith('g') || word.startsWith('b') || 
-                                      word.startsWith('gu') || word.startsWith('gw') || word.startsWith('bu') ||
-                                      word.startsWith('hu') || word.startsWith('wu');
-                
-                const containsEnSound = word.includes('en') || word.includes('an') || word.includes('on') || 
-                                      word.includes('in') || word.includes('un') || word.includes('wen') || 
-                                      word.includes('gen') || word.includes('ben') || word.includes('uen') ||
-                                      word.includes('én') || word.includes('án') || word.includes('ón');
-                
-                if (startsWithSound && containsEnSound) {
-                    console.log(`🎯 Detección por sonido: "${word}" suena como "gwen"`);
+        const words = textLower.split(/\s+/);
+
+        console.log(`🔍 Analizando: "${textLower}"`);
+
+        // ⭐ CASO 1: Detectar comandos compuestos PRIMERO
+        const firstWord = words[0];
+        for (const [compound, action] of Object.entries(this.compoundCommands)) {
+            if (firstWord === compound || this.calculateSimilarity(firstWord, compound) >= 0.80) {
+                const rest = words.slice(1).join(' ');
+                if (rest.length >= 2) {
+                    console.log(`🎯 Comando compuesto: '${compound}' → '${action} ${rest}'`);
                     this.lastDetectionTime = now;
                     return true;
-                }
-                
-                // Detectar por primera sílaba MEJORADO
-                const firstSyllables = ['wen', 'gen', 'ben', 'guen', 'gwen', 'when', 'buen', 'güen', 'wén', 'guén'];
-                for (let syllable of firstSyllables) {
-                    if (word.startsWith(syllable) || 
-                        word.substring(0, 4).includes(syllable) ||
-                        this.calculateSimilarity(word.substring(0, 3), syllable) > 0.6) {
-                        console.log(`🎯 Detección por sílaba: "${word}" -> "${syllable}"`);
-                        this.lastDetectionTime = now;
-                        return true;
-                    }
-                }
-                
-                // Detección por similitud fonética
-                if (this.calculateSimilarity(word, 'gwen') > 0.6) {
-                    console.log(`🎯 Detección por similitud: "${word}" -> "gwen"`);
-                    this.lastDetectionTime = now;
-                    return true;
+                } else {
+                    console.log(`❌ Comando compuesto sin parámetros`);
+                    return false;
                 }
             }
         }
-        
-        console.log('❌ No se detectó wake word');
+
+        // ⭐ CASO 2: Wake word normal + comando
+        let wakeWordFound = false;
+        let wakeWordPosition = -1;
+
+        // Buscar wake word en las primeras 3 palabras
+        for (let i = 0; i < Math.min(3, words.length); i++) {
+            const word = words[i];
+            
+            // Coincidencia exacta
+            if (this.wakeWords.has(word)) {
+                wakeWordFound = true;
+                wakeWordPosition = i;
+                console.log(`🎯 Wake word exacta: '${word}' en posición ${i}`);
+                break;
+            }
+
+            // Similitud >= 70%
+            for (const wakeWord of this.wakeWords) {
+                if (word.length >= 2) {
+                    const similarity = this.calculateSimilarity(word, wakeWord);
+                    if (similarity >= 0.70) {
+                        wakeWordFound = true;
+                        wakeWordPosition = i;
+                        console.log(`🎯 Wake word similar: '${word}' ≈ '${wakeWord}' (${(similarity * 100).toFixed(0)}%)`);
+                        break;
+                    }
+                }
+            }
+
+            if (wakeWordFound) break;
+        }
+
+        if (!wakeWordFound) {
+            console.log('❌ No se encontró wake word');
+            return false;
+        }
+
+        // ⭐ VALIDACIÓN CRÍTICA: Debe tener comando después
+        const remainingWords = words.slice(wakeWordPosition + 1);
+        const remainingText = remainingWords.join(' ');
+
+        if (remainingText.length < 2) {
+            console.log(`❌ Wake word sin comando: '${textLower}'`);
+            return false;
+        }
+
+        // Verificar que tenga palabras de comando
+        if (this.hasCommandWords(remainingText)) {
+            console.log(`✅ Wake word + comando válido: '${remainingText}'`);
+            this.lastDetectionTime = now;
+            return true;
+        } else {
+            console.log(`❌ Wake word pero sin comando válido`);
+            return false;
+        }
+    }
+
+    hasCommandWords(text) {
+        const textLower = text.toLowerCase();
+
+        // Verificar números
+        if (/\d/.test(textLower)) {
+            console.log('   ✅ Contiene números');
+            return true;
+        }
+
+        // Palabras clave de comandos
+        const commandKeywords = [
+            // Acciones
+            'agrega', 'agregar', 'añade', 'añadir', 'pon', 'poner', 'mete', 'meter',
+            'vendí', 'vendi', 'vender', 'vende', 'vendido', 'vendimos',
+            'actualiza', 'actualizar', 'cambia', 'cambiar', 'modifica', 'modificar',
+            'muestra', 'mostrar', 'ver', 'consultar', 'buscar', 'filtra', 'filtrar',
+            'cuánto', 'cuanto', 'hay', 'stock', 'inventario',
+            
+            // Movimientos
+            'venta', 'ventas', 'salida', 'salidas',
+            'entrada', 'entradas', 'compra', 'compras',
+            'movimiento', 'movimientos', 'historial',
+            
+            // Temporales
+            'hoy', 'ayer', 'semana', 'mes',
+            
+            // Productos comunes
+            'arroz', 'frijol', 'aceite', 'azucar', 'sal', 'leche', 'galleta',
+            'jabon', 'atun', 'cafe', 'pan', 'huevo', 'pasta', 'tomate',
+            'cebolla', 'papa', 'zanahoria', 'pollo', 'carne', 'refresco',
+            'agua', 'yogurt', 'mantequilla', 'queso', 'shampoo',
+            
+            // Números escritos
+            'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez',
+            'once', 'doce', 'quince', 'veinte', 'treinta', 'docena',
+            
+            // Unidades
+            'unidad', 'unidades', 'kilo', 'kilos', 'litro', 'litros',
+            'paquete', 'paquetes', 'lata', 'latas', 'bolsa', 'bolsas'
+        ];
+
+        for (const keyword of commandKeywords) {
+            if (textLower.includes(keyword)) {
+                console.log(`   ✅ Contiene '${keyword}'`);
+                return true;
+            }
+        }
+
+        console.log('   ❌ No contiene palabras de comando');
         return false;
     }
 
     calculateSimilarity(word1, word2) {
-        // Método simple de similitud
+        word1 = word1.toLowerCase();
+        word2 = word2.toLowerCase();
+
+        // Método 1: Letras comunes
         const set1 = new Set(word1);
         const set2 = new Set(word2);
         const intersection = new Set([...set1].filter(x => set2.has(x)));
         const union = new Set([...set1, ...set2]);
-        return intersection.size / union.size;
+        const similarity1 = intersection.size / union.size;
+
+        // Método 2: Prefijo común
+        let similarity2 = 0;
+        if (word1.startsWith(word2.substring(0, 2)) || word2.startsWith(word1.substring(0, 2))) {
+            similarity2 = 0.7;
+        }
+
+        return Math.max(similarity1, similarity2);
     }
 
     startServerCheck() {
@@ -326,16 +405,14 @@ class WakeWordManager {
 
     onWakeWordDetected() {
         console.log("🎯 ACTIVANDO GRABACIÓN AUTOMÁTICA...");
-        this.updateUI('✅ ¡GWEN ACTIVADA! Iniciando grabación...', 'activated');
+        this.updateUI('✅ ¡ACTIVADA! Iniciando grabación...', 'activated');
 
         setTimeout(() => {
             const startBtn = document.getElementById('startBtn');
             if (startBtn && !startBtn.disabled) {
                 console.log("🎯 EJECUTANDO GRABACIÓN...");
                 
-                // Forzar interacción con el documento primero
                 this.forceUserInteraction();
-                
                 startBtn.click();
 
                 const statusElement = document.getElementById('status');
@@ -344,10 +421,9 @@ class WakeWordManager {
                     statusElement.classList.add('auto-recording');
                 }
 
-                // Reactivar después de 10 segundos para comandos largos
                 setTimeout(() => {
                     if (this.isListening) {
-                        this.updateUI('🎯 Escuchando... Di "GWEN"', 'listening');
+                        this.updateUI('🎯 Escuchando... Di wake word + comando', 'listening');
                         console.log("✅ WAKE WORD REACTIVADO");
                     }
                 }, 10000);
@@ -358,7 +434,7 @@ class WakeWordManager {
                 
                 setTimeout(() => {
                     if (this.isListening) {
-                        this.updateUI('🎯 Escuchando... Di "GWEN"', 'listening');
+                        this.updateUI('🎯 Escuchando... Di wake word + comando', 'listening');
                     }
                 }, 3000);
             }
@@ -366,14 +442,13 @@ class WakeWordManager {
     }
 
     forceUserInteraction() {
-        // Crear un clic silencioso para cumplir con la política de autoplay
         try {
             const clicker = document.createElement('button');
             clicker.style.display = 'none';
             document.body.appendChild(clicker);
             clicker.click();
             document.body.removeChild(clicker);
-            console.log("✅ Interacción forzada para políticas de audio");
+            console.log("✅ Interacción forzada");
         } catch (e) {
             console.warn("⚠️ No se pudo forzar interacción:", e);
         }
@@ -404,7 +479,7 @@ class WakeWordManager {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("🚀 INICIALIZANDO WAKE WORD MANAGER MEJORADO...");
+    console.log("🚀 INICIALIZANDO WAKE WORD MANAGER ACTUALIZADO...");
     window.wakeWordManager = new WakeWordManager();
     
     const wakeWordButton = document.getElementById('wakeWordButton');

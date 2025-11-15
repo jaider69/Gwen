@@ -17,44 +17,46 @@
             <button class="tab-button" onclick="openTab('inventory-tab')">📦 Inventario Completo</button>
             <button class="tab-button" onclick="openTab('alerts-tab')">🚨 Alertas</button>
             <button class="tab-button" onclick="openTab('activities-tab')">📋 Actividades</button>
+            <button class="tab-button" onclick="openTab('notifications-tab')">🔔 Notificaciones</button>
         </div>
 
-        <div class="voice-section">
-            <div class="voice-indicator" id="voiceIndicator">🎤</div>
-            <button class="control-btn" id="controlBtn" onclick="toggleVoiceSystem()">
-                🚀 Iniciar Sistema de Voz
-            </button>
-            <div class="status-text" id="statusText">
-                Presiona el botón para comenzar
-            </div>
-            
-            <div class="info-box">
-                <strong>📖 Cómo usar:</strong>
-                <ul>
-                    <li>Di "Gwen" para activar</li>
-                    <li>Ejemplo: "Gwen, agrega 10 galletas"</li>
-                    <li>Ejemplo: "Gwen, muéstrame las salidas del 13 de octubre"</li>
-                    <li>Ejemplo: "Gwen, ver ventas de leche"</li>
-                    <li>Ejemplo: "Gwen, mostrar entradas de hoy"</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Pestaña INICIO -->
+       <!-- Pestaña INICIO -->
         <div id="home-tab" class="tab-content active">
-            <div class="home-dashboard">
-                <!-- Historial de Movimientos Recientes -->
+            <!-- 1. Voz centrada arriba -->
+            <div class="voice-section" id="voiceSection">
+                <div class="voice-indicator" id="voiceIndicator">🎤</div>
+                <button class="control-btn" id="controlBtn" onclick="toggleVoiceSystem()">
+                    🚀 Iniciar Sistema de Voz
+                </button>
+                <div class="status-text" id="statusText">
+                    Presiona el botón para comenzar
+                </div>
+                <div class="info-box">
+                    <strong>📖 Cómo usar:</strong>
+                    <ul>
+                        <li>Di "Gwen" para activar</li>
+                        <li>Ejemplo: "Gwen, agrega 10 galletas"</li>
+                        <li>Ejemplo: "Gwen, muéstrame las salidas del 13 de octubre"</li>
+                        <li>Ejemplo: "Gwen, ver ventas de leche"</li>
+                        <li>Ejemplo: "Gwen, mostrar entradas de hoy"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. Grid abajo: Productos ← → Historial -->
+            <div class="home-bottom-grid">
+                <!-- Productos Activos (izquierda) -->
+                <div class="home-section">
+                    <h2>🎯 Productos Activos</h2>
+                    <p class="sub-info">Productos que has modificado recientemente</p>
+                    <div id="interactiveInventoryGrid" class="inventory-grid"></div>
+                </div>
+
+                <!-- Historial (derecha) -->
                 <div class="home-section">
                     <h2>📋 Historial de Movimientos Recientes</h2>
                     <p class="sub-info">Últimas acciones realizadas por voz</p>
                     <div id="homeActivitiesList" class="home-activities"></div>
-                </div>
-
-                <!-- Productos Interactivos -->
-                <div class="home-section">
-                    <h2>🎯 Productos Activos</h2>
-                    <p class="sub-info">Productos que has modificado recientemente</p>
-                    <div class="inventory-grid" id="interactiveInventoryGrid"></div>
                 </div>
             </div>
         </div>
@@ -179,7 +181,58 @@
                 <div id="fullActivitiesList"></div>
             </div>
         </div>
-    </div>
+    
+        <!-- Pestaña NOTIFICACIONES - VERSIÓN CORREGIDA -->
+        <div id="notifications-tab" class="tab-content">
+            <div class="notifications-container">
+                <div class="notification-settings">
+                    <h2>🔔 Configuración de Alertas de Stock</h2>
+                    <p class="sub-info">Recibe notificaciones en tu PC cuando productos estén por agotarse</p>
+                    
+                    <div class="notification-status">
+                        <div id="notificationPermission" class="status-card">
+                            <div class="stat-icon">📢</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="permissionStatus">Solicitando...</div>
+                                <div class="stat-label">Permiso de Notificaciones</div>
+                            </div>
+                        </div>
+                        
+                        <div id="pushSubscription" class="status-card" style="display:none;">
+                            <div class="stat-icon">🔔</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="subscriptionStatus">No suscrito</div>
+                                <div class="stat-label">Notificaciones Push</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert-warning" style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff9800;">
+                        <h3>⚠️ Importante para recibir notificaciones:</h3>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>El navegador debe estar abierto</li>
+                            <li>Debe haber al menos una pestaña de Gwen cargada</li>
+                            <li>Debes permitir notificaciones al suscribirte</li>
+                            <li>Verificamos el stock cada 5 minutos</li>
+                        </ul>
+                    </div>
+
+                    <div class="notification-controls">
+                        <button id="subscribePushBtn" class="control-btn" onclick="subscribePushNotifications()">
+                            🎯 Activar Alertas de Stock
+                        </button>
+                        <button id="unsubscribePushBtn" class="control-btn stop" onclick="unsubscribePushNotifications()" style="display:none;">
+                            🔇 Desactivar Alertas
+                        </button>
+                    </div>
+                </div>
+
+                <div class="notification-history">
+                    <h2>📜 Historial de Alertas (Máx. 50)</h2>
+                    <div id="notificationsList" class="notifications-list"></div>
+                </div>
+            </div>
+        </div>
 
     <script>
         let isSystemActive = false;
@@ -187,6 +240,7 @@
         let allActivities = [];
         let filteredActivities = [];
         let currentVoiceFilters = null; // Almacenar filtros aplicados por voz
+        let lastNotificationId = 0;  // ID de la última notificación mostrada
 
         // Mostrar/ocultar campo de fecha específica
         document.addEventListener('DOMContentLoaded', function() {
@@ -205,7 +259,7 @@
             }
         });
 
-        // Sistema de pestañas
+        // Sistema de pestañas (VERSIÓN CORRECTA Y ÚNICA)
         function openTab(tabName) {
             const tabContents = document.getElementsByClassName('tab-content');
             for (let tab of tabContents) {
@@ -220,6 +274,7 @@
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
 
+            // Cargar contenido según pestaña
             if (tabName === 'home-tab') {
                 loadHomeDashboard();
             } else if (tabName === 'inventory-tab') {
@@ -228,6 +283,9 @@
                 loadAlerts();
             } else if (tabName === 'activities-tab') {
                 loadFullActivities();
+            } else if (tabName === 'notifications-tab') {
+                checkNotificationPermission();
+                loadNotifications();
             }
         }
 
@@ -468,31 +526,36 @@
                 document.getElementById('goodStockProducts').textContent = goodStockProducts;
 
                 // Mostrar productos
-                const grid = document.getElementById('inventoryGrid');
-                grid.innerHTML = '';
+                // Dentro de la función loadInventoryComplete(), modificar la creación de tarjetas:
 
-                inventory.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    if (product.stock <= product.minStock) {
-                        card.classList.add('low-stock');
-                    }
+        // Mostrar productos
+        const grid = document.getElementById('inventoryGrid');
+        grid.innerHTML = '';
 
-                    const stockPercentage = (product.stock / (product.minStock * 2)) * 100;
+        inventory.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            if (product.stock <= product.minStock) {
+                card.classList.add('low-stock');
+            }
 
-                    card.innerHTML = `
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-category">🏷️ ${product.category}</div>
-                        <div class="product-stock">📦 Stock: ${product.stock} unidades</div>
-                        <div class="product-stock-bar">
-                            <div class="stock-bar-fill ${product.stock <= product.minStock ? 'low' : 'good'}" 
-                                 style="width: ${Math.min(stockPercentage, 100)}%"></div>
-                        </div>
-                        <div class="product-stock" style="font-size: 12px; color: #999;">⚠️ Mínimo: ${product.minStock}</div>
-                    `;
+            const stockPercentage = (product.stock / (product.minStock * 2)) * 100;
 
-                    grid.appendChild(card);
-                });
+            card.innerHTML = `
+                <div class="product-name">${product.name}</div>
+                ${product.brand ? `<div class="product-brand">🏭 Marca: ${product.brand}</div>` : ''}
+                <div class="product-category">🏷️ ${product.category}</div>
+                <div class="product-stock">📦 Stock: ${product.stock} unidades</div>
+                <div class="product-stock-bar">
+                    <div class="stock-bar-fill ${product.stock <= product.minStock ? 'low' : 'good'}" 
+                        style="width: ${Math.min(stockPercentage, 100)}%"></div>
+                </div>
+                <div class="product-stock" style="font-size: 12px; color: #999;">⚠️ Mínimo: ${product.minStock}</div>
+                ${product.expiryDate ? `<div class="product-expiry" style="font-size: 12px; color: #ff9800;">📅 Vence: ${product.expiryDate}</div>` : ''}
+            `;
+
+            grid.appendChild(card);
+        });
 
                 // Actualizar filtro de productos
                 updateProductFilter(inventory);
@@ -902,6 +965,254 @@
             console.log('🚀 Página cargada - Gwen lista');
             loadHomeDashboard();
         });
+    // SISTEMA DE NOTIFICACIONES POR POLLING MEJORADO
+    let notificationInterval = null;
+    let isSubscribedToNotifications = false;
+
+    async function checkNotificationPermission() {
+        const statusEl = document.getElementById('permissionStatus');
+        const cardEl = document.querySelector('#notificationPermission');
+        
+        statusEl.textContent = '✅ Modo Polling Activado';
+        cardEl.className = 'status-card granted';
+        return true;
+    }
+
+    function startNewNotificationsPolling() {
+    if (newNotificationsInterval) return;
+    
+    console.log('🔄 Polling de notificaciones nuevas activado (cada 3 segundos)');
+    
+    newNotificationsInterval = setInterval(async () => {
+        try {
+            const response = await fetch('/api/notifications/new');
+            const data = await response.json();
+            
+            if (data.success && data.count > 0) {
+                console.log(`📢 ${data.count} notificaciones nuevas detectadas`);
+                
+                // Mostrar toast para cada nueva notificación
+                data.notifications.forEach(notification => {
+                    showToastNotification(notification);
+                });
+                
+                // Actualizar la lista de notificaciones si está visible
+                if (document.getElementById('notifications-tab').classList.contains('active')) {
+                    loadNotifications();
+                }
+            }
+        } catch (error) {
+            console.error('Error en polling de notificaciones:', error);
+        }
+    }, 3000); // Cada 3 segundos
+}    
+
+    function showToastNotification(notification) {
+    // Crear elemento toast
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.id = `toast-${notification.id}`;
+    
+    // Determinar icono y color según tipo
+    let icon = '🔔';
+    let typeClass = 'info';
+    
+    if (notification.type === 'low-stock') {
+        icon = '⚠️';
+        typeClass = 'warning';
+        
+        // 🎵 Opcional: Reproducir sonido de alerta (descomenta si quieres)
+        // const audio = new Audio('/static/sounds/alert.mp3');
+        // audio.play().catch(e => console.log('Sonido no disponible:', e));
+    } else if (notification.type === 'sale') {
+        icon = '💰';
+        typeClass = 'success';
+    } else if (notification.type === 'system') {
+        icon = 'ℹ️';
+        typeClass = 'info';
+    }
+    
+    // Construir HTML del toast
+    toast.innerHTML = `
+        <div class="toast-icon ${typeClass}">${icon}</div>
+        <div class="toast-content">
+            <div class="toast-title">${notification.title}</div>
+            <div class="toast-message">${notification.message}</div>
+            <div class="toast-time">🕐 ${notification.time} - ${notification.date}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    
+    // Añadir al body
+    document.body.appendChild(toast);
+    
+    // Animación de entrada
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    // Auto-cerrar después de 8 segundos
+    const autoCloseTimeout = setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 8000);
+    
+    // Cerrar al hacer clic en el toast
+    toast.addEventListener('click', (e) => {
+        if (e.target === toast || e.target.classList.contains('toast-close')) {
+            clearTimeout(autoCloseTimeout);
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }
+    });
+    
+    console.log(`📢 Toast mostrado: ${notification.title}`);
+}
+
+    async function subscribePushNotifications() {
+    try {
+        const response = await fetch('/api/notifications/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            isSubscribedToNotifications = true;
+            document.getElementById('subscriptionStatus').textContent = '✅ Alertas Activadas';
+            document.getElementById('subscribePushBtn').style.display = 'none';
+            document.getElementById('unsubscribePushBtn').style.display = 'inline-block';
+            document.getElementById('pushSubscription').style.display = 'block';
+            
+            startNotificationPolling();
+            startNewNotificationsPolling();  // ⭐ NUEVO: Polling de notificaciones nuevas
+            showNotification('Gwen', '🔔 Sistema de alertas activado');
+            loadNotifications();
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('Error activando alertas: ' + error.message);
+    }
+}
+
+    function startNotificationPolling() {
+        if (notificationInterval) return;
+        
+        console.log('🔄 Polling de notificaciones activado (cada 5 segundos)');
+        notificationInterval = setInterval(async () => {
+            await loadNotifications();
+            
+            // Verificar stock bajo periódicamente
+            await checkForNewAlerts();
+        }, 5000);
+    }
+
+    async function checkForNewAlerts() {
+        try {
+            const response = await fetch('/api/alerts');
+            const alerts = await response.json();
+            
+            if (alerts.lowStock && alerts.lowStock.length > 0) {
+                // Podrías mostrar notificaciones en tiempo real aquí
+                console.log('📦 Productos con stock bajo:', alerts.lowStock.length);
+            }
+        } catch (error) {
+            console.error('Error verificando alertas:', error);
+        }
+    }
+
+async function unsubscribePushNotifications() {
+    clearInterval(notificationInterval);
+    clearInterval(newNotificationsInterval);  // ⭐ NUEVO: Limpiar polling de notificaciones
+    notificationInterval = null;
+    newNotificationsInterval = null;
+    isSubscribedToNotifications = false;
+        try {
+            await fetch('/api/notifications/unsubscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (error) {
+            console.error('Error desuscribiendo:', error);
+        }
+        
+        document.getElementById('subscriptionStatus').textContent = '❌ Alertas Desactivadas';
+        document.getElementById('subscribePushBtn').style.display = 'inline-block';
+        document.getElementById('unsubscribePushBtn').style.display = 'none';
+        
+        showNotification('Gwen', '🔇 Alertas desactivadas');
+    }
+
+    async function loadNotifications() {
+        try {
+            const response = await fetch('/api/notifications/history');
+            const notifications = await response.json();
+            
+            const list = document.getElementById('notificationsList');
+            list.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔔</div>
+                        <h3>No hay notificaciones</h3>
+                        <p>Las alertas de stock bajo aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const item = document.createElement('div');
+                item.className = 'notification-item';
+                
+                let icon = '🔔';
+                let typeClass = 'system';
+                
+                if (notification.type === 'low-stock') {
+                    icon = '⚠️';
+                    typeClass = 'low-stock';
+                } else if (notification.type === 'sale') {
+                    icon = '💰';
+                    typeClass = 'sale';
+                }
+                
+                item.innerHTML = `
+                    <div class="notification-icon ${typeClass}">${icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-text">${notification.message}</div>
+                        <div class="notification-time">
+                            🕐 ${notification.time} - ${notification.date}
+                            ${notification.urgency ? `<span style="margin-left: 10px; padding: 2px 6px; background: #ff9800; color: white; border-radius: 4px; font-size: 10px;">${notification.urgency}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            
+        } catch (error) {
+            console.error('Error cargando notificaciones:', error);
+        }
+    }
+
+    let newNotificationsInterval = null;
+
+    // Añadir estos estilos CSS para las animaciones
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
     </script>
 </body>
 </html>

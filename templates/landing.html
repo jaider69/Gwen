@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Gwen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <script>
+        // Si la página se recarga (F5 o Ctrl+R), volver al inicio (loader)
+        if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+            window.location.replace("/");
+        }
+    </script>
+</head>
+<body>
+    <div class="main-content">
+        <div class="landing-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='imagenes/gwen_logo_butterfly.png') }}" alt="Gwen Logo">
+                </div>
+                <h1 class="brand-name">Gwen</h1>
+            </div>
+            
+            <p class="tagline">
+                Bienvenido a Gwen, la forma más fácil de gestionar tu inventario.
+            </p>
+            
+            <div class="buttons-container">
+                <a href="/login" class="btn btn-primary">Iniciar Sesión</a>
+                <a href="/register" class="btn btn-secondary">Registrarse</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p class="footer-text">© 2025 Gwen. Todos los derechos reservados.</p>
+        <div class="footer-links">
+            <a href="/terminos" class="footer-link">Términos de Uso</a>
+            <a href="/politicas" class="footer-link">Políticas de Privacidad</a>
+        </div>
+    </footer>
+    
+    <script>
+        function iniciarSesion() {
+            console.log('Iniciar Sesión');
+            window.location.href = '/login';
+        }
+        
+        function registrarse() {
+            console.log('Registrarse');
+            window.location.href = '/register';
+        }
+    </script>
+</body>
+</html>

@@ -61,13 +61,13 @@ def test_microphone():
                     print(f"   ✅ DETECTADO: '{text}'")
                     
                     # Verificar si tiene "gwen" o variantes
-                    text_lower = text.lower()
-                    wake_words = ['gwen', 'guen', 'wen', 'when', 'buen', 'bwen', 
-                                 'bendy', 'bendi', 'wendy', 'wendi']
-                    
+                    # === Reemplaza tu bloque de detección por este ===
+                    text_lower = text.lower().strip()
+                    wake_words = {'gwen', 'guen', 'when', 'wendy','buen','bueno'}  # ← iguales a tu app
+
                     found = False
                     for wake in wake_words:
-                        if wake in text_lower:
+                        if wake in text_lower.split()[0:3]:  # ← solo primeras 3 palabras
                             print(f"   🎉 ¡WAKE WORD ENCONTRADA: '{wake}'!")
                             success_count += 1
                             found = True
