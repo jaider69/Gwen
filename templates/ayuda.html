@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda - Gwen Asistente Virtual</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ayuda.css') }}">
+</head>
+<body>
+    <!-- Encabezado con nombre de tienda -->
+    <div class="tienda-header">
+        <span id="nombreTienda"></span>
+    </div>
+
+    <!-- Botón volver -->
+    <div class="back-button-container">
+        <a href="/gwen" class="back-button">
+            ← Volver a Gwen
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="help-header">
+            <h1>📚 Centro de Ayuda - Gwen</h1>
+            <p class="subtitle">Todo lo que necesitas saber para usar tu asistente virtual</p>
+        </div>
+
+        <!-- Buscador -->
+        <div class="search-box">
+            <input type="text" id="searchHelp" placeholder="🔍 Buscar en la ayuda..." oninput="filterHelp()">
+        </div>
+
+        <!-- Secciones de ayuda -->
+        <div class="help-sections">
+            
+            <!-- Primeros Pasos -->
+            <div class="help-section" data-category="inicio">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>🚀 Primeros Pasos</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>¿Cómo empezar a usar Gwen?</h3>
+                        <p>1. En la pestaña <strong>Inicio</strong>, presiona el botón <strong>"Iniciar Sistema de Voz"</strong></p>
+                        <p>2. Espera a que el indicador muestre que está escuchando</p>
+                        <p>3. Di <strong>"Gwen"</strong> para activar el comando</p>
+                        <p>4. Da tu orden (ejemplo: "agrega 10 galletas")</p>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>¿Qué necesito para usar el sistema de voz?</h3>
+                        <p>• Un micrófono funcional en tu dispositivo</p>
+                        <p>• Permitir acceso al micrófono en tu navegador</p>
+                        <p>• Conexión a internet estable</p>
+                        <p>• Navegador compatible (Chrome, Edge, Firefox recomendados)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comandos de Voz -->
+            <div class="help-section" data-category="comandos">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>🎤 Comandos de Voz</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>Agregar productos</h3>
+                        <div class="command-examples">
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, agrega 10 galletas"</span>
+                                <span class="command-desc">Añade 10 unidades al inventario</span>
+                            </div>
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, añade 5 leches"</span>
+                                <span class="command-desc">Alternativa para agregar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Registrar ventas</h3>
+                        <div class="command-examples">
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, vendí 3 panes"</span>
+                                <span class="command-desc">Resta del inventario</span>
+                            </div>
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, venta de 2 gaseosas"</span>
+                                <span class="command-desc">Otra forma de registrar ventas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Actualizar stock</h3>
+                        <div class="command-examples">
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, actualiza arroz a 20"</span>
+                                <span class="command-desc">Establece cantidad exacta</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Consultar historial</h3>
+                        <div class="command-examples">
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, muéstrame las ventas de hoy"</span>
+                                <span class="command-desc">Filtra ventas del día actual</span>
+                            </div>
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, ver entradas del 13 de octubre"</span>
+                                <span class="command-desc">Consulta fecha específica</span>
+                            </div>
+                            <div class="command-card">
+                                <span class="command-text">"Gwen, mostrar movimientos de leche"</span>
+                                <span class="command-desc">Filtra por producto</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventario -->
+            <div class="help-section" data-category="inventario">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>📦 Gestión de Inventario</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>¿Cómo ver mi inventario completo?</h3>
+                        <p>Ve a la pestaña <strong>📦 Inventario Completo</strong> para ver todos tus productos con:</p>
+                        <ul>
+                            <li>Stock actual y stock mínimo</li>
+                            <li>Categorías de productos</li>
+                            <li>Barra visual de nivel de stock</li>
+                            <li>Alertas de stock bajo</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>¿Qué significan los colores en las tarjetas?</h3>
+                        <p><strong style="color: #4CAF50;">● Verde:</strong> Stock en nivel óptimo</p>
+                        <p><strong style="color: #ff9800;">● Naranja/Rojo:</strong> Stock bajo (necesita reposición)</p>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Productos Activos</h3>
+                        <p>En la pestaña de Inicio verás los productos con los que has interactuado recientemente mediante comandos de voz. Esto te ayuda a monitorear rápidamente los productos que más mueves.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial y Filtros -->
+            <div class="help-section" data-category="historial">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>📋 Historial y Filtros</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>Filtros disponibles</h3>
+                        <p><strong>Por tipo de acción:</strong> Agregar, Venta, Actualización</p>
+                        <p><strong>Por producto:</strong> Selecciona un producto específico</p>
+                        <p><strong>Por fecha:</strong> Hoy, Última semana, Último mes, Fecha específica</p>
+                        <p><strong>Búsqueda:</strong> Busca por cualquier texto en el historial</p>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Filtros por voz automáticos</h3>
+                        <p>Cuando uses comandos como <em>"muéstrame las ventas de hoy"</em>, Gwen aplicará automáticamente los filtros correspondientes en la pestaña de Inventario.</p>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Limpiar filtros</h3>
+                        <p>Presiona el botón <strong>"🔄 Limpiar Filtros"</strong> para restablecer todos los filtros y ver todo el historial.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div class="help-section" data-category="alertas">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>🚨 Sistema de Alertas</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>Alertas de Stock Bajo</h3>
+                        <p>Cuando un producto alcanza o está por debajo del stock mínimo configurado, aparecerá en la pestaña de <strong>🚨 Alertas</strong> con nivel de urgencia:</p>
+                        <ul>
+                            <li><strong>Crítico:</strong> Stock a 0 o muy bajo</li>
+                            <li><strong>Urgente:</strong> Por debajo del mínimo</li>
+                            <li><strong>Advertencia:</strong> Cerca del mínimo</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Notificaciones en tiempo real</h3>
+                        <p>En la pestaña <strong>🔔 Notificaciones</strong> puedes:</p>
+                        <ul>
+                            <li>Activar alertas automáticas de stock bajo</li>
+                            <li>Ver historial de notificaciones</li>
+                            <li>Recibir toasts emergentes en pantalla</li>
+                        </ul>
+                        <p><strong>Importante:</strong> El navegador debe estar abierto para recibir notificaciones. El sistema verifica el stock cada 5 minutos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solución de Problemas -->
+            <div class="help-section" data-category="problemas">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>🔧 Solución de Problemas</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>El micrófono no funciona</h3>
+                        <ul>
+                            <li>Verifica que el micrófono esté conectado y activo</li>
+                            <li>Permite el acceso al micrófono en tu navegador (verifica el ícono de candado en la barra de direcciones)</li>
+                            <li>Cierra otras aplicaciones que puedan estar usando el micrófono</li>
+                            <li>Intenta recargar la página</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Gwen no reconoce mis comandos</h3>
+                        <ul>
+                            <li>Asegúrate de decir <strong>"Gwen"</strong> antes del comando</li>
+                            <li>Habla claramente y a un volumen normal</li>
+                            <li>Espera a que el indicador muestre que está escuchando</li>
+                            <li>Verifica tu conexión a internet</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Los productos no se actualizan</h3>
+                        <ul>
+                            <li>Verifica que el producto exista en tu inventario</li>
+                            <li>Revisa que el nombre del producto sea correcto</li>
+                            <li>Espera unos segundos para que se actualice la interfaz</li>
+                            <li>Recarga la página si el problema persiste</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Las notificaciones no llegan</h3>
+                        <ul>
+                            <li>Verifica que hayas dado permisos de notificaciones</li>
+                            <li>Mantén al menos una pestaña de Gwen abierta</li>
+                            <li>Revisa la configuración de notificaciones del sistema operativo</li>
+                            <li>El sistema verifica cada 5 minutos, ten paciencia</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consejos y Mejores Prácticas -->
+            <div class="help-section" data-category="consejos">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>💡 Consejos y Mejores Prácticas</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="help-item">
+                        <h3>Optimiza tu experiencia</h3>
+                        <ul>
+                            <li>Usa nombres cortos y claros para tus productos</li>
+                            <li>Configura stocks mínimos realistas para alertas efectivas</li>
+                            <li>Revisa el historial periódicamente para detectar patrones de venta</li>
+                            <li>Activa las notificaciones para no quedarte sin stock</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Mantén tu inventario organizado</h3>
+                        <ul>
+                            <li>Usa categorías consistentes para tus productos</li>
+                            <li>Actualiza las fechas de vencimiento cuando recibas nuevos productos</li>
+                            <li>Verifica regularmente la pestaña de Alertas</li>
+                            <li>Aprovecha los filtros para análisis rápidos</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-item">
+                        <h3>Comandos más eficientes</h3>
+                        <ul>
+                            <li>Sé específico: "Gwen, agrega 5 leches Gloria 1 litro"</li>
+                            <li>Usa números claros: Di "diez" o "10" según prefieras</li>
+                            <li>Para consultas, usa fechas completas: "13 de octubre"</li>
+                            <li>Practica los comandos más comunes para ganar velocidad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sección de contacto -->
+        <div class="contact-section">
+            <h2>❓ ¿Necesitas más ayuda?</h2>
+            <p>Si no encontraste la respuesta a tu pregunta o necesitas asistencia adicional:</p>
+            <div class="contact-options">
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Correo Electrónico</h3>
+                    <p>soporte@gwen.com</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>Chat en Vivo</h3>
+                    <p>Lunes a Viernes, 9am - 6pm</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📱</div>
+                    <h3>WhatsApp</h3>
+                    <p>+57 300 123 4567</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Nombre de la tienda
+        const nombreTienda = localStorage.getItem('nombreTienda') || 'Mi Tienda';
+        document.getElementById('nombreTienda').textContent = nombreTienda;
+
+        // Toggle de secciones
+        function toggleSection(header) {
+            const section = header.parentElement;
+            const content = section.querySelector('.section-content');
+            const icon = header.querySelector('.toggle-icon');
+            
+            section.classList.toggle('active');
+            
+            if (section.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '▲';
+            } else {
+                content.style.maxHeight = '0';
+                icon.textContent = '▼';
+            }
+        }
+
+        // Filtro de búsqueda
+        function filterHelp() {
+            const searchTerm = document.getElementById('searchHelp').value.toLowerCase();
+            const sections = document.querySelectorAll('.help-section');
+            
+            sections.forEach(section => {
+                const content = section.textContent.toLowerCase();
+                
+                if (content.includes(searchTerm)) {
+                    section.style.display = 'block';
+                    
+                    // Auto-expandir si hay búsqueda activa
+                    if (searchTerm.length > 0 && !section.classList.contains('active')) {
+                        section.querySelector('.section-header').click();
+                    }
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // Abrir primera sección por defecto
+        window.addEventListener('DOMContentLoaded', () => {
+            const firstSection = document.querySelector('.help-section .section-header');
+            if (firstSection) {
+                firstSection.click();
+            }
+        });
+    </script>
+</body>
+</html>

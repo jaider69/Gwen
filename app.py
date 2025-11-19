@@ -1024,6 +1024,27 @@ def gwen():
     return render_template("gwen.html")
 
 # ============================================
+# RUTAS NUEVAS: MI CUENTA, CONFIGURACIÓN, AYUDA, LOGOUT
+# ============================================
+
+@app.route("/mi-cuenta")
+def mi_cuenta():
+    return render_template("mi_cuenta.html")
+
+@app.route("/configuracion")
+def configuracion():
+    return render_template("configuracion.html")
+
+@app.route("/ayuda")
+def ayuda():
+    return render_template("ayuda.html")
+
+@app.route("/logout")
+def logout():
+    # Aquí puedes limpiar sesión si usas alguna
+    return redirect("/")
+
+# ============================================
 # RUTAS API - INVENTARIO
 # ============================================
 

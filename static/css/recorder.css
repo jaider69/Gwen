@@ -1680,3 +1680,116 @@ h1 {
     align-items: center;
     gap: 5px;
 }
+
+/* === MENÚ HAMBURGUESA === */
+.menu-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.menu-toggle {
+    background: white;
+    border: none;
+    font-size: 24px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background 0.3s;
+}
+
+.menu-toggle:hover {
+    background: #f0f0f0;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    width: 220px;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.dropdown-menu.show {
+    display: flex;
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.menu-item {
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background: #f0f0f0;
+}
+
+.menu-separator {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 5px 0;
+}
+
+.logout {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.logout:hover {
+    background: #ffeaea;
+}
+
+.tienda-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background:  linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 6px 14px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    z-index: 100;
+}
+

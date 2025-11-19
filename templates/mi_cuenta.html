@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - Gwen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mi_cuenta.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <div class="account-header">
+        <a href="/gwen" class="back-btn">← Volver a Gwen</a>
+        <h1>🎯 Mi Cuenta</h1>
+        <p class="subtitle">Gestiona tu perfil y configuración de Gwen</p>
+    </div>
+
+    <div class="account-container">
+        
+        <!-- Perfil de Usuario -->
+        <div class="account-card">
+            <div class="card-header">
+                <div class="card-icon">👤</div>
+                <h2>Información Personal</h2>
+            </div>
+            
+            <form class="account-form" id="profileForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="userName" placeholder="Tu nombre" value="Usuario Gwen">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de la Tienda</label>
+                        <input type="text" id="storeName" placeholder="Nombre de tu tienda" value="Mi Tienda de Barrio">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="userEmail" placeholder="tucorreo@ejemplo.com" value="usuario@gwen.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="userPhone" placeholder="+57 300 000 0000" value="+57 300 123 4567">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección de la Tienda</label>
+                    <textarea id="storeAddress" placeholder="Dirección completa">Calle 123 #45-67, Pasto, Nariño</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💾 Guardar Cambios</button>
+                    <span class="form-message" id="profileMessage"></span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Estadísticas de Uso -->
+        <div class="account-card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <h2>Estadísticas de Uso</h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value" id="totalProducts">0</div>
+                    <div class="stat-label">Productos Registrados</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">🎤</div>
+                    <div class="stat-value" id="totalCommands">0</div>
+                    <div class="stat-label">Comandos de Voz</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-value" id="totalActivities">0</div>
+                    <div class="stat-label">Actividades Totales</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-value" id="totalAlerts">0</div>
+                    <div class="stat-label">Alertas Activas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración de Alertas -->
+        <div class="account-card">
+            <div class="card-header">
+                <div class="card-icon">🔔</div>
+                <h2>Configuración de Alertas</h2>
+            </div>
+            
+            <div class="preferences-grid">
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h3>Alertas de Stock Bajo</h3>
+                        <p>Recibe notificaciones cuando productos estén por agotarse</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="lowStockAlerts" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h3>Alertas de Vencimiento</h3>
+                        <p>Notificaciones de productos próximos a vencer</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="expiryAlerts" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h3>Sonidos del Sistema</h3>
+                        <p>Reproducir sonidos cuando Gwen responde</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="systemSounds" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h3>Confirmaciones por Voz</h3>
+                        <p>Gwen confirma cada acción realizada con voz</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="voiceConfirmations" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración de Inventario -->
+        <div class="account-card">
+            <div class="card-header">
+                <div class="card-icon">⚙️</div>
+                <h2>Configuración de Inventario</h2>
+            </div>
+            
+            <form class="account-form" id="inventoryForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock Mínimo por Defecto</label>
+                        <input type="number" id="defaultMinStock" value="10" min="1">
+                        <span class="form-hint">Cantidad mínima para nuevos productos</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Días de Alerta de Vencimiento</label>
+                        <input type="number" id="expiryWarningDays" value="30" min="1">
+                        <span class="form-hint">Alertar cuando falten estos días</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💾 Guardar Configuración</button>
+                    <span class="form-message" id="inventoryMessage"></span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Seguridad -->
+        <div class="account-card">
+            <div class="card-header">
+                <div class="card-icon">🔐</div>
+                <h2>Seguridad</h2>
+            </div>
+            
+            <form class="account-form" id="securityForm">
+                <div class="form-group">
+                    <label>Contraseña Actual</label>
+                    <input type="password" id="currentPassword" placeholder="••••••••">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nueva Contraseña</label>
+                        <input type="password" id="newPassword" placeholder="••••••••">
+                        <span class="form-hint">Mínimo 6 caracteres</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Nueva Contraseña</label>
+                        <input type="password" id="confirmPassword" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">🔒 Cambiar Contraseña</button>
+                    <span class="form-message" id="securityMessage"></span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Zona de Peligro -->
+        <div class="account-card danger-card">
+            <div class="card-header">
+                <div class="card-icon">⚠️</div>
+                <h2>Zona de Peligro</h2>
+            </div>
+            
+            <div class="danger-content">
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h3>Limpiar Todo el Historial</h3>
+                        <p>Elimina permanentemente todas las actividades registradas</p>
+                    </div>
+                    <button class="btn-danger-outline" onclick="clearHistory()">🗑️ Limpiar Historial</button>
+                </div>
+
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h3>Restablecer Inventario</h3>
+                        <p>Elimina todos los productos del inventario (no se puede deshacer)</p>
+                    </div>
+                    <button class="btn-danger" onclick="resetInventory()">⚠️ Restablecer</button>
+                </div>
+
+                <div class="danger-item">
+                    <div class="danger-info">
+                        <h3>Eliminar Cuenta</h3>
+                        <p>Elimina tu cuenta y todos tus datos permanentemente</p>
+                    </div>
+                    <button class="btn-danger" onclick="deleteAccount()">🚫 Eliminar Cuenta</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="account-footer">
+        <p>Gwen - Asistente Virtual para Gestión de Inventario</p>
+        <p><strong>Versión 1.0.0</strong> | © 2025 Todos los derechos reservados</p>
+    </div>
+
+    <script>
+        // Cargar estadísticas al inicio
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadStats();
+            loadPreferences();
+        });
+
+        // Cargar estadísticas
+        async function loadStats() {
+            try {
+                // Productos
+                const inventoryResponse = await fetch('/api/inventory');
+                const inventory = await inventoryResponse.json();
+                document.getElementById('totalProducts').textContent = inventory.length;
+
+                // Actividades
+                const activitiesResponse = await fetch('/api/activities');
+                const activities = await activitiesResponse.json();
+                document.getElementById('totalActivities').textContent = activities.length;
+
+                // Alertas
+                const alertsResponse = await fetch('/api/alerts');
+                const alerts = await alertsResponse.json();
+                const totalAlerts = (alerts.lowStock?.length || 0) + (alerts.expiring?.length || 0);
+                document.getElementById('totalAlerts').textContent = totalAlerts;
+
+                // Comandos (estimado)
+                document.getElementById('totalCommands').textContent = activities.length;
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Guardar perfil
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('profileMessage');
+            
+            // Guardar en localStorage
+            localStorage.setItem('userName', document.getElementById('userName').value);
+            localStorage.setItem('storeName', document.getElementById('storeName').value);
+            localStorage.setItem('userEmail', document.getElementById('userEmail').value);
+            localStorage.setItem('userPhone', document.getElementById('userPhone').value);
+            localStorage.setItem('storeAddress', document.getElementById('storeAddress').value);
+
+            message.textContent = '✅ Cambios guardados correctamente';
+            message.className = 'form-message success';
+            
+            setTimeout(() => {
+                message.textContent = '';
+            }, 3000);
+        });
+
+        // Guardar configuración de inventario
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('inventoryMessage');
+            
+            localStorage.setItem('defaultMinStock', document.getElementById('defaultMinStock').value);
+            localStorage.setItem('expiryWarningDays', document.getElementById('expiryWarningDays').value);
+
+            message.textContent = '✅ Configuración guardada';
+            message.className = 'form-message success';
+            
+            setTimeout(() => {
+                message.textContent = '';
+            }, 3000);
+        });
+
+        // Cambiar contraseña
+        document.getElementById('securityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = document.getElementById('securityMessage');
+            
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (!currentPass || !newPass || !confirmPass) {
+                message.textContent = '❌ Completa todos los campos';
+                message.className = 'form-message error';
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                message.textContent = '❌ Las contraseñas no coinciden';
+                message.className = 'form-message error';
+                return;
+            }
+
+            if (newPass.length < 6) {
+                message.textContent = '❌ La contraseña debe tener al menos 6 caracteres';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // Aquí deberías hacer una petición al backend
+            message.textContent = '✅ Contraseña actualizada correctamente';
+            message.className = 'form-message success';
+            
+            // Limpiar campos
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            
+            setTimeout(() => {
+                message.textContent = '';
+            }, 3000);
+        });
+
+        // Cargar preferencias guardadas
+        function loadPreferences() {
+            const preferences = [
+                'lowStockAlerts',
+                'expiryAlerts',
+                'systemSounds',
+                'voiceConfirmations'
+            ];
+
+            preferences.forEach(pref => {
+                const saved = localStorage.getItem(pref);
+                if (saved !== null) {
+                    document.getElementById(pref).checked = saved === 'true';
+                }
+            });
+
+            // Cargar valores de perfil
+            if (localStorage.getItem('userName')) {
+                document.getElementById('userName').value = localStorage.getItem('userName');
+            }
+            if (localStorage.getItem('storeName')) {
+                document.getElementById('storeName').value = localStorage.getItem('storeName');
+            }
+            if (localStorage.getItem('userEmail')) {
+                document.getElementById('userEmail').value = localStorage.getItem('userEmail');
+            }
+            if (localStorage.getItem('userPhone')) {
+                document.getElementById('userPhone').value = localStorage.getItem('userPhone');
+            }
+            if (localStorage.getItem('storeAddress')) {
+                document.getElementById('storeAddress').value = localStorage.getItem('storeAddress');
+            }
+        }
+
+        // Guardar preferencias cuando cambian
+        ['lowStockAlerts', 'expiryAlerts', 'systemSounds', 'voiceConfirmations'].forEach(pref => {
+            document.getElementById(pref).addEventListener('change', function() {
+                localStorage.setItem(pref, this.checked);
+            });
+        });
+
+        // Funciones de zona de peligro
+        function clearHistory() {
+            if (confirm('⚠️ ¿Estás seguro de que quieres eliminar todo el historial? Esta acción no se puede deshacer.')) {
+                if (confirm('🚨 ÚLTIMA CONFIRMACIÓN: ¿Eliminar TODO el historial?')) {
+                    fetch('/api/clear-history', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('✅ Historial eliminado correctamente');
+                                loadStats();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('❌ Error al eliminar el historial');
+                        });
+                }
+            }
+        }
+
+        function resetInventory() {
+            if (confirm('⚠️ ¿Estás seguro de que quieres eliminar TODO el inventario? Esta acción no se puede deshacer.')) {
+                if (confirm('🚨 ÚLTIMA CONFIRMACIÓN: ¿Eliminar TODOS los productos?')) {
+                    fetch('/api/reset-inventory', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('✅ Inventario restablecido correctamente');
+                                loadStats();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('❌ Error al restablecer el inventario');
+                        });
+                }
+            }
+        }
+
+        function deleteAccount() {
+            if (confirm('⚠️ ¿ELIMINAR TU CUENTA? Se perderán todos tus datos permanentemente.')) {
+                if (confirm('🚨 ÚLTIMA ADVERTENCIA: Esta acción NO se puede deshacer. ¿Continuar?')) {
+                    const password = prompt('Ingresa tu contraseña para confirmar:');
+                    if (password) {
+                        // Aquí deberías validar con el backend
+                        alert('Función de eliminación de cuenta pendiente de implementar en el backend');
+                        // window.location.href = '/logout';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

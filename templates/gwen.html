@@ -11,6 +11,27 @@
         <h1>🎯 Gwen - Asistente Virtual</h1>
         <p class="subtitle">Gestión de inventario por voz para tu tienda de barrio</p>
 
+        <!-- Menú hamburguesa -->   
+        <div class="menu-container">
+        <button class="menu-toggle" onclick="toggleMenu()">
+            ☰
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+            <div class="menu-header">
+            <div class="user-avatar" id="userAvatar">G</div>
+            <div class="user-name" id="userName">Usuario</div>
+            </div>
+
+            <a href="/mi-cuenta" class="menu-item">👤 Mi cuenta</a>
+            <a href="/configuracion" class="menu-item">⚙️ Configuración</a>
+            <a href="/ayuda" class="menu-item">❓ Ayuda</a>
+
+            <div class="menu-separator"></div>
+
+            <a href="/logout" class="menu-item logout">🚪 Cerrar sesión</a>
+        </div>
+        </div>
+
         <!-- Pestañas de navegación -->
         <div class="tabs">
             <button class="tab-button active" onclick="openTab('home-tab')">🏠 Inicio</button>
@@ -1393,6 +1414,33 @@ async function loadNotifications() {
         }
     `;
     document.head.appendChild(style);
+    </script>
+    <script>
+    function toggleMenu() {
+    const menu = document.getElementById('dropdownMenu');
+    menu.classList.toggle('show');
+    }
+
+    // Cerrar menú si se hace clic fuera
+    window.addEventListener('click', function(e) {
+    const container = document.querySelector('.menu-container');
+    if (!container.contains(e.target)) {
+        document.getElementById('dropdownMenu').classList.remove('show');
+    }
+    });
+    </script>
+    <script>
+    // Simulación: cambia estos valores cuando tengas el nombre real
+    const userName = "Gwen";
+    const userInitial = userName.charAt(0).toUpperCase();
+
+    document.getElementById('userAvatar').textContent = userInitial;
+    document.getElementById('userName').textContent = userName;
+    </script>
+
+    <script>
+    const nombreTienda = localStorage.getItem('nombreTienda') || 'Mi Tienda';
+    document.getElementById('nombreTienda').textContent = nombreTienda;
     </script>
 </body>
 </html>

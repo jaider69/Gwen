@@ -127,3 +127,16 @@
                 transform: translateY(0);
             }
         }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            accent-color: #667eea;
+        }

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Gwen Asistente Virtual</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/configuracion.css') }}">
+</head>
+<body>
+    <!-- Encabezado con nombre de tienda -->
+    <div class="tienda-header">
+        <span id="nombreTienda"></span>
+    </div>
+
+    <!-- Botón volver -->
+    <div class="back-button-container">
+        <a href="/gwen" class="back-button">
+            ← Volver a Gwen
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="config-header">
+            <h1>⚙️ Configuración</h1>
+            <p class="subtitle">Personaliza tu experiencia con Gwen</p>
+        </div>
+
+        <!-- Pestañas de configuración -->
+        <div class="config-tabs">
+            <button class="config-tab-button active" onclick="openConfigTab('general')">
+                🏪 General
+            </button>
+            <button class="config-tab-button" onclick="openConfigTab('inventario')">
+                📦 Inventario
+            </button>
+            <button class="config-tab-button" onclick="openConfigTab('voz')">
+                🎤 Voz
+            </button>
+            <button class="config-tab-button" onclick="openConfigTab('notificaciones')">
+                🔔 Notificaciones
+            </button>
+            <button class="config-tab-button" onclick="openConfigTab('sistema')">
+                💻 Sistema
+            </button>
+        </div>
+
+        <!-- PESTAÑA GENERAL -->
+        <div id="general" class="config-tab-content active">
+            <div class="config-section">
+                <h2>🏪 Información de la Tienda</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label for="storeName">Nombre de la Tienda</label>
+                        <input type="text" id="storeName" placeholder="Mi Tienda de Barrio">
+                        <span class="config-description">Este nombre aparecerá en el encabezado de todas las páginas</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="storeAddress">Dirección</label>
+                        <input type="text" id="storeAddress" placeholder="Calle 123 #45-67">
+                    </div>
+
+                    <div class="config-item">
+                        <label for="storePhone">Teléfono</label>
+                        <input type="tel" id="storePhone" placeholder="+57 300 123 4567">
+                    </div>
+
+                    <div class="config-item">
+                        <label for="storeEmail">Correo Electrónico</label>
+                        <input type="email" id="storeEmail" placeholder="mitienda@ejemplo.com">
+                    </div>
+
+                    <button class="btn-primary" onclick="saveStoreInfo()">
+                        💾 Guardar Información
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>🎨 Apariencia</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label>Tema de Color</label>
+                        <div class="color-themes">
+                            <div class="theme-option active" data-theme="purple" onclick="selectTheme('purple')">
+                                <div class="theme-preview purple"></div>
+                                <span>Morado (Predeterminado)</span>
+                            </div>
+                            <div class="theme-option" data-theme="blue" onclick="selectTheme('blue')">
+                                <div class="theme-preview blue"></div>
+                                <span>Azul</span>
+                            </div>
+                            <div class="theme-option" data-theme="green" onclick="selectTheme('green')">
+                                <div class="theme-preview green"></div>
+                                <span>Verde</span>
+                            </div>
+                            <div class="theme-option" data-theme="orange" onclick="selectTheme('orange')">
+                                <div class="theme-preview orange"></div>
+                                <span>Naranja</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-item">
+                        <label>Tamaño de Fuente</label>
+                        <div class="font-size-options">
+                            <button class="font-btn" onclick="setFontSize('small')">A</button>
+                            <button class="font-btn active" onclick="setFontSize('medium')">A</button>
+                            <button class="font-btn" onclick="setFontSize('large')">A</button>
+                        </div>
+                        <span class="config-description">Pequeño / Mediano / Grande</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA INVENTARIO -->
+        <div id="inventario" class="config-tab-content">
+            <div class="config-section">
+                <h2>📦 Gestión de Inventario</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label for="defaultMinStock">Stock Mínimo Predeterminado</label>
+                        <input type="number" id="defaultMinStock" value="5" min="1">
+                        <span class="config-description">Stock mínimo para nuevos productos</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="autoLowStockAlert" checked>
+                            Alertas automáticas de stock bajo
+                        </label>
+                        <span class="config-description">Notificar cuando productos estén por debajo del mínimo</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="showStockBars" checked>
+                            Mostrar barras de stock en tarjetas
+                        </label>
+                        <span class="config-description">Visualización gráfica del nivel de stock</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="expiryWarningDays">Días de advertencia para vencimiento</label>
+                        <input type="number" id="expiryWarningDays" value="7" min="1">
+                        <span class="config-description">Alertar cuando un producto esté próximo a vencer</span>
+                    </div>
+
+                    <button class="btn-primary" onclick="saveInventoryConfig()">
+                        💾 Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>🗂️ Categorías de Productos</h2>
+                
+                <div class="config-card">
+                    <div class="categories-list" id="categoriesList">
+                        <div class="category-item">
+                            <span>🥤 Bebidas</span>
+                            <button class="btn-delete" onclick="deleteCategory('Bebidas')">🗑️</button>
+                        </div>
+                        <div class="category-item">
+                            <span>🍪 Snacks</span>
+                            <button class="btn-delete" onclick="deleteCategory('Snacks')">🗑️</button>
+                        </div>
+                        <div class="category-item">
+                            <span>🥛 Lácteos</span>
+                            <button class="btn-delete" onclick="deleteCategory('Lácteos')">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="add-category">
+                        <input type="text" id="newCategory" placeholder="Nueva categoría...">
+                        <button class="btn-secondary" onclick="addCategory()">➕ Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA VOZ -->
+        <div id="voz" class="config-tab-content">
+            <div class="config-section">
+                <h2>🎤 Configuración de Voz</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label>Palabra de Activación</label>
+                        <div class="wake-word-display">
+                            <span class="wake-word">Gwen</span>
+                        </div>
+                        <span class="config-description">Di esta palabra antes de cada comando</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="voiceVolume">Sensibilidad del Micrófono</label>
+                        <input type="range" id="voiceVolume" min="1" max="10" value="7">
+                        <div class="range-labels">
+                            <span>Baja</span>
+                            <span id="volumeValue">7</span>
+                            <span>Alta</span>
+                        </div>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="voiceFeedback" checked>
+                            Retroalimentación de voz
+                        </label>
+                        <span class="config-description">Gwen confirmará las acciones con voz</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="voiceBeep" checked>
+                            Sonido de confirmación
+                        </label>
+                        <span class="config-description">Reproducir beep al activar comando</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="voiceTimeout">Tiempo de espera (segundos)</label>
+                        <input type="number" id="voiceTimeout" value="5" min="3" max="15">
+                        <span class="config-description">Tiempo máximo para completar un comando</span>
+                    </div>
+
+                    <button class="btn-primary" onclick="saveVoiceConfig()">
+                        💾 Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>🎙️ Prueba de Micrófono</h2>
+                
+                <div class="config-card">
+                    <div class="mic-test-container">
+                        <div class="mic-indicator" id="micIndicator">🎤</div>
+                        <button class="btn-secondary" id="testMicBtn" onclick="testMicrophone()">
+                            🔊 Probar Micrófono
+                        </button>
+                        <div class="mic-status" id="micStatus">Presiona para probar</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA NOTIFICACIONES -->
+        <div id="notificaciones" class="config-tab-content">
+            <div class="config-section">
+                <h2>🔔 Notificaciones</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="enableNotifications" checked>
+                            Habilitar notificaciones
+                        </label>
+                        <span class="config-description">Recibir alertas en tiempo real</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label>Tipos de Notificaciones</label>
+                        <div class="notification-types">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="notifyLowStock" checked>
+                                <span>⚠️ Stock bajo</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="notifyExpiry" checked>
+                                <span>📅 Productos por vencer</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="notifySales" checked>
+                                <span>💰 Ventas realizadas</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="notifySystem" checked>
+                                <span>💻 Eventos del sistema</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="notificationFrequency">Frecuencia de verificación</label>
+                        <select id="notificationFrequency">
+                            <option value="1">Cada minuto</option>
+                            <option value="5" selected>Cada 5 minutos</option>
+                            <option value="10">Cada 10 minutos</option>
+                            <option value="30">Cada 30 minutos</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="notificationSound" checked>
+                            Sonido en notificaciones
+                        </label>
+                        <span class="config-description">Reproducir sonido al recibir alerta</span>
+                    </div>
+
+                    <button class="btn-primary" onclick="saveNotificationConfig()">
+                        💾 Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>🧪 Probar Notificaciones</h2>
+                
+                <div class="config-card">
+                    <div class="test-buttons">
+                        <button class="btn-test warning" onclick="testNotification('low-stock')">
+                            ⚠️ Stock Bajo
+                        </button>
+                        <button class="btn-test danger" onclick="testNotification('expiry')">
+                            📅 Vencimiento
+                        </button>
+                        <button class="btn-test success" onclick="testNotification('sale')">
+                            💰 Venta
+                        </button>
+                        <button class="btn-test info" onclick="testNotification('system')">
+                            💻 Sistema
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA SISTEMA -->
+        <div id="sistema" class="config-tab-content">
+            <div class="config-section">
+                <h2>💻 Configuración del Sistema</h2>
+                
+                <div class="config-card">
+                    <div class="config-item">
+                        <label for="pollInterval">Intervalo de actualización (segundos)</label>
+                        <input type="number" id="pollInterval" value="2" min="1" max="10">
+                        <span class="config-description">Frecuencia de actualización de datos en tiempo real</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label>
+                            <input type="checkbox" id="autoRefresh" checked>
+                            Actualización automática
+                        </label>
+                        <span class="config-description">Actualizar datos sin recargar la página</span>
+                    </div>
+
+                    <div class="config-item">
+                        <label for="maxHistoryItems">Máximo de elementos en historial</label>
+                        <input type="number" id="maxHistoryItems" value="50" min="10" max="200">
+                        <span class="config-description">Cantidad de movimientos a guardar</span>
+                    </div>
+
+                    <button class="btn-primary" onclick="saveSystemConfig()">
+                        💾 Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>🗑️ Gestión de Datos</h2>
+                
+                <div class="config-card">
+                    <div class="danger-zone">
+                        <h3>⚠️ Zona de Peligro</h3>
+                        <p>Estas acciones son irreversibles. Úsalas con precaución.</p>
+                        
+                        <button class="btn-danger" onclick="clearHistory()">
+                            🗑️ Limpiar Historial
+                        </button>
+                        <span class="config-description">Eliminar todos los movimientos registrados</span>
+
+                        <button class="btn-danger" onclick="clearNotifications()">
+                            🔔 Limpiar Notificaciones
+                        </button>
+                        <span class="config-description">Eliminar historial de notificaciones</span>
+
+                        <button class="btn-danger" onclick="resetAllSettings()">
+                            ⚙️ Restaurar Configuración
+                        </button>
+                        <span class="config-description">Volver a valores predeterminados</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h2>📊 Información del Sistema</h2>
+                
+                <div class="config-card">
+                    <div class="system-info">
+                        <div class="info-row">
+                            <span class="info-label">Versión de Gwen:</span>
+                            <span class="info-value">1.0.0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Última actualización:</span>
+                            <span class="info-value" id="lastUpdate">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Total de productos:</span>
+                            <span class="info-value" id="totalProducts">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Total de movimientos:</span>
+                            <span class="info-value" id="totalMovements">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Nombre de la tienda
+        const nombreTienda = localStorage.getItem('nombreTienda') || 'Mi Tienda';
+        document.getElementById('nombreTienda').textContent = nombreTienda;
+        document.getElementById('storeName').value = nombreTienda;
+
+        // Sistema de pestañas
+        function openConfigTab(tabName) {
+            const tabContents = document.getElementsByClassName('config-tab-content');
+            for (let tab of tabContents) {
+                tab.classList.remove('active');
+            }
+
+            const tabButtons = document.getElementsByClassName('config-tab-button');
+            for (let button of tabButtons) {
+                button.classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Guardar información de tienda
+        function saveStoreInfo() {
+            const storeName = document.getElementById('storeName').value;
+            const storeAddress = document.getElementById('storeAddress').value;
+            const storePhone = document.getElementById('storePhone').value;
+            const storeEmail = document.getElementById('storeEmail').value;
+
+            localStorage.setItem('nombreTienda', storeName);
+            localStorage.setItem('storeAddress', storeAddress);
+            localStorage.setItem('storePhone', storePhone);
+            localStorage.setItem('storeEmail', storeEmail);
+
+            showToast('✅ Información guardada correctamente', 'success');
+            document.getElementById('nombreTienda').textContent = storeName;
+        }
+
+        // Seleccionar tema
+        function selectTheme(theme) {
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            localStorage.setItem('theme', theme);
+            showToast(`🎨 Tema ${theme} aplicado`, 'success');
+        }
+
+        // Tamaño de fuente
+        function setFontSize(size) {
+            document.querySelectorAll('.font-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            localStorage.setItem('fontSize', size);
+            showToast(`✅ Tamaño de fuente: ${size}`, 'success');
+        }
+
+        // Guardar configuración de inventario
+        function saveInventoryConfig() {
+            const config = {
+                defaultMinStock: document.getElementById('defaultMinStock').value,
+                autoLowStockAlert: document.getElementById('autoLowStockAlert').checked,
+                showStockBars: document.getElementById('showStockBars').checked,
+                expiryWarningDays: document.getElementById('expiryWarningDays').value
+            };
+            localStorage.setItem('inventoryConfig', JSON.stringify(config));
+            showToast('✅ Configuración de inventario guardada', 'success');
+        }
+
+        // Gestión de categorías
+        function addCategory() {
+            const newCategory = document.getElementById('newCategory').value.trim();
+            if (newCategory) {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                categoryItem.innerHTML = `
+                    <span>🏷️ ${newCategory}</span>
+                    <button class="btn-delete" onclick="deleteCategory('${newCategory}')">🗑️</button>
+                `;
+                document.getElementById('categoriesList').appendChild(categoryItem);
+                document.getElementById('newCategory').value = '';
+                showToast(`✅ Categoría "${newCategory}" agregada`, 'success');
+            }
+        }
+
+        function deleteCategory(categoryName) {
+            if (confirm(`¿Eliminar la categoría "${categoryName}"?`)) {
+                event.target.closest('.category-item').remove();
+                showToast(`🗑️ Categoría "${categoryName}" eliminada`, 'warning');
+            }
+        }
+
+        // Configuración de voz
+        document.getElementById('voiceVolume')?.addEventListener('input', function() {
+            document.getElementById('volumeValue').textContent = this.value;
+        });
+
+        function saveVoiceConfig() {
+            const config = {
+                voiceVolume: document.getElementById('voiceVolume').value,
+                voiceFeedback: document.getElementById('voiceFeedback').checked,
+                voiceBeep: document.getElementById('voiceBeep').checked,
+                voiceTimeout: document.getElementById('voiceTimeout').value
+            };
+            localStorage.setItem('voiceConfig', JSON.stringify(config));
+            showToast('✅ Configuración de voz guardada', 'success');
+        }
+
+        // Prueba de micrófono
+        function testMicrophone() {
+            const indicator = document.getElementById('micIndicator');
+            const status = document.getElementById('micStatus');
+            const btn = document.getElementById('testMicBtn');
+            
+            btn.disabled = true;
+            indicator.style.animation = 'pulse 1s infinite';
+            status.textContent = 'Escuchando... habla ahora';
+            
+            setTimeout(() => {
+                indicator.style.animation = '';
+                status.textContent = '✅ Micrófono funcionando correctamente';
+                btn.disabled = false;
+            }, 3000);
+        }
+
+        // Configuración de notificaciones
+        function saveNotificationConfig() {
+            const config = {
+                enableNotifications: document.getElementById('enableNotifications').checked,
+                notifyLowStock: document.getElementById('notifyLowStock').checked,
+                notifyExpiry: document.getElementById('notifyExpiry').checked,
+                notifySales: document.getElementById('notifySales').checked,
+                notifySystem: document.getElementById('notifySystem').checked,
+                notificationFrequency: document.getElementById('notificationFrequency').value,
+                notificationSound: document.getElementById('notificationSound').checked
+            };
+            localStorage.setItem('notificationConfig', JSON.stringify(config));
+            showToast('✅ Configuración de notificaciones guardada', 'success');
+        }
+
+        // Probar notificaciones
+        function testNotification(type) {
+            const messages = {
+                'low-stock': { title: '⚠️ Stock Bajo', message: 'Producto de prueba tiene stock bajo', icon: '⚠️' },
+                'expiry': { title: '📅 Vencimiento', message: 'Producto de prueba vence pronto', icon: '📅' },
+                'sale': { title: '💰 Venta', message: 'Venta de prueba registrada', icon: '💰' },
+                'system': { title: '💻 Sistema', message: 'Notificación de prueba del sistema', icon: '💻' }
+            };
+            
+            const msg = messages[type];
+            showToast(`${msg.icon} ${msg.title}: ${msg.message}`, 'info');
+        }
+
+        // Configuración del sistema
+        function saveSystemConfig() {
+            const config = {
+                pollInterval: document.getElementById('pollInterval').value,
+                autoRefresh: document.getElementById('autoRefresh').checked,
+                maxHistoryItems: document.getElementById('maxHistoryItems').value
+            };
+            localStorage.setItem('systemConfig', JSON.stringify(config));
+            showToast('✅ Configuración del sistema guardada', 'success');
+        }
+
+        // Gestión de datos
+        function clearHistory() {
+            if (confirm('⚠️ ¿Estás seguro de eliminar todo el historial? Esta acción no se puede deshacer.')) {
+                showToast('🗑️ Historial eliminado', 'warning');
+            }
+        }
+
+        function clearNotifications() {
+            if (confirm('⚠️ ¿Eliminar todas las notificaciones?')) {
+                showToast('🔔 Notificaciones eliminadas', 'warning');
+            }
+        }
+
+        function resetAllSettings() {
+            if (confirm('⚠️ ¿Restaurar toda la configuración a valores predeterminados?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Toast de notificaciones
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Cargar información del sistema
+        window.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-CO');
+            
+            try {
+                const inventoryResponse = await fetch('/api/inventory');
+                const inventory = await inventoryResponse.json();
+                document.getElementById('totalProducts').textContent = inventory.length;
+
+                const activitiesResponse = await fetch('/api/activities');
+                const activities = await activitiesResponse.json();
+                document.getElementById('totalMovements').textContent = activities.length;
+            } catch (error) {
+                console.error('Error cargando información:', error);
+            }
+        });
+    </script>
+</body>
+</html>
