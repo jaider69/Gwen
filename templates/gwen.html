@@ -17,7 +17,10 @@
             <button class="tab-button" onclick="openTab('inventory-tab')">📦 Inventario Completo</button>
             <button class="tab-button" onclick="openTab('alerts-tab')">🚨 Alertas</button>
             <button class="tab-button" onclick="openTab('activities-tab')">📋 Actividades</button>
-            <button class="tab-button" onclick="openTab('notifications-tab')">🔔 Notificaciones</button>
+            <button class="tab-button" onclick="openTab('notifications-tab')" id="notificationsTabBtn">
+                🔔 Notificaciones
+                <span class="notification-badge" id="notificationBadge">0</span>
+            </button>
         </div>
 
        <!-- Pestaña INICIO -->
@@ -34,11 +37,12 @@
                 <div class="info-box">
                     <strong>📖 Cómo usar:</strong>
                     <ul>
-                        <li>Di "Gwen" para activar</li>
-                        <li>Ejemplo: "Gwen, agrega 10 galletas"</li>
-                        <li>Ejemplo: "Gwen, muéstrame las salidas del 13 de octubre"</li>
+                        <li>Di "Gwen" para activar seguido de un comando</li>
+                        <li>Ejemplo: "Gwen, agrega 10 galletas de la marca club social que vencen el 25 de enero de 2026"</li>
+                        <li>Ejemplo: "Gwen, mostrar actualizaciones de stock"</li>
                         <li>Ejemplo: "Gwen, ver ventas de leche"</li>
                         <li>Ejemplo: "Gwen, mostrar entradas de hoy"</li>
+                        <li>Apagar: "Gwen, apagate "</li>
                     </ul>
                 </div>
             </div>
@@ -241,9 +245,23 @@
         let filteredActivities = [];
         let currentVoiceFilters = null; // Almacenar filtros aplicados por voz
         let lastNotificationId = 0;  // ID de la última notificación mostrada
+        let unreadNotificationCount = 0;
+        let notificationBadge = null;
+        let frontendNotificationCount = 0; 
+        let lastNotifiedId = 0;
+        let notificationsLoadedOnce = false;
+        let shownNotificationIds = new Set();
+        let badgeCounter = 0;
 
-        // Mostrar/ocultar campo de fecha específica
         document.addEventListener('DOMContentLoaded', function() {
+            // 1. Inicializar variables globales
+            notificationBadge = document.getElementById('notificationBadge');
+            console.log('✅ Badge inicializado:', notificationBadge);
+            
+            // 2. Cargar dashboard inicial
+            loadHomeDashboard();
+            
+            // 3. Configurar filtros de fecha
             const filterDate = document.getElementById('filterDate');
             const specificDate = document.getElementById('specificDate');
             
@@ -257,37 +275,61 @@
                     }
                 });
             }
+            
+            // 4. 🔴 PRUEBA TEMPORAL - QUITAR DESPUÉS DE VERIFICAR
+            // Descomenta solo para probar, luego vuelve a comentar:
+            //setTimeout(() => updateNotificationBadge(3), 2000);
         });
 
-        // Sistema de pestañas (VERSIÓN CORRECTA Y ÚNICA)
-        function openTab(tabName) {
-            const tabContents = document.getElementsByClassName('tab-content');
-            for (let tab of tabContents) {
-                tab.classList.remove('active');
-            }
+        // 🔴 REEMPLAZA TODA LA FUNCIÓN openTab
+function openTab(tabName) {
+    const tabContents = document.getElementsByClassName('tab-content');
+    for (let tab of tabContents) {
+        tab.classList.remove('active');
+    }
 
-            const tabButtons = document.getElementsByClassName('tab-button');
-            for (let button of tabButtons) {
-                button.classList.remove('active');
-            }
+    const tabButtons = document.getElementsByClassName('tab-button');
+    for (let button of tabButtons) {
+        button.classList.remove('active');
+    }
 
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
 
-            // Cargar contenido según pestaña
-            if (tabName === 'home-tab') {
-                loadHomeDashboard();
-            } else if (tabName === 'inventory-tab') {
-                loadInventoryComplete();
-            } else if (tabName === 'alerts-tab') {
-                loadAlerts();
-            } else if (tabName === 'activities-tab') {
-                loadFullActivities();
-            } else if (tabName === 'notifications-tab') {
-                checkNotificationPermission();
-                loadNotifications();
-            }
-        }
+    // Cargar contenido según pestaña
+    if (tabName === 'home-tab') {
+        loadHomeDashboard();
+    } else if (tabName === 'inventory-tab') {
+        loadInventoryComplete();
+    } else if (tabName === 'alerts-tab') {
+        loadAlerts();
+    } else if (tabName === 'activities-tab') {
+        loadFullActivities();
+    } else if (tabName === 'notifications-tab') {
+        console.log("🔔 Abriendo pestaña de notificaciones - Reset completo");
+        
+        // ⭐ 1. Resetear contador acumulativo del badge
+        badgeCounter = 0;
+        updateNotificationBadge(0);
+        console.log('🔢 Badge reseteado a 0');
+        
+        // 2. Marcar todas como leídas en el backend
+        fetch('/api/notifications/mark-all-read', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  console.log("✅ Todas las notificaciones marcadas como leídas en el servidor");
+              }
+          });
+        
+        // 3. Cargar el historial
+        checkNotificationPermission();
+        loadNotifications();
+    }
+}
+
 
         async function toggleVoiceSystem() {
             const btn = document.getElementById('controlBtn');
@@ -312,6 +354,17 @@
                             // Verificar si hay comandos con filtros pendientes
                             const cmdResponse = await fetch('/api/get-last-command');
                             const cmdData = await cmdResponse.json();
+
+                            // ⭐ NUEVO: Detectar si se debe detener el sistema
+                            if (cmdData.filters && cmdData.filters.action === 'stop_voice_system') {
+                                console.log("🛑 Comando de voz: Detener sistema");
+                                // Simular clic en el botón de detener
+                                if (isSystemActive) {
+                                    await toggleVoiceSystem(); // Esto detendrá el sistema
+                                }
+                                await fetch('/api/consume-filters', {method: 'POST'});
+                                return; // Salir del polling
+                            }
 
                             // ---------- AUTO-FILTROS POR VOZ ----------
                             if (cmdData.fresh && cmdData.filters) {
@@ -543,7 +596,7 @@
 
             card.innerHTML = `
                 <div class="product-name">${product.name}</div>
-                ${product.brand ? `<div class="product-brand">🏭 Marca: ${product.brand}</div>` : ''}
+                <div class="product-brand">🏭 Marca: ${product.brand || 'Sin marca'}</div>
                 <div class="product-category">🏷️ ${product.category}</div>
                 <div class="product-stock">📦 Stock: ${product.stock} unidades</div>
                 <div class="product-stock-bar">
@@ -551,7 +604,7 @@
                         style="width: ${Math.min(stockPercentage, 100)}%"></div>
                 </div>
                 <div class="product-stock" style="font-size: 12px; color: #999;">⚠️ Mínimo: ${product.minStock}</div>
-                ${product.expiryDate ? `<div class="product-expiry" style="font-size: 12px; color: #ff9800;">📅 Vence: ${product.expiryDate}</div>` : ''}
+                ${product.expiryDate ? `<div class="product-expiry">📅 Vence: ${product.expiryDate}</div>` : ''}
             `;
 
             grid.appendChild(card);
@@ -666,6 +719,41 @@
 
             displayFilteredHistory();
         }
+
+        function updateNotificationBadge(count) {
+            console.log('🎯 updateNotificationBadge llamado con:', count);
+            
+            if (!notificationBadge) {
+                console.error("❌ Badge no encontrado");
+                return;
+            }
+            
+            // ⭐ SOLUCIÓN: Usar directamente el count del backend, sin variables intermedias
+            if (count > 0) {
+                notificationBadge.textContent = count > 99 ? '99+' : count;
+                notificationBadge.classList.add('show');
+                console.log(`📢 Badge ACTUALIZADO: ${count} notificaciones`);
+            } else {
+                notificationBadge.textContent = '0';
+                notificationBadge.classList.remove('show');
+                console.log("📢 Badge OCULTO");
+            }
+        }
+
+        // AÑADE ESTA FUNCIÓN EN gwen.html (cerca de las otras funciones de notificaciones)
+        function showNotification(title, message) {
+            console.log(`📢 Notificación: ${title} - ${message}`);
+            // Puedes mostrar un toast simple o usar console.log
+            showToastNotification({
+                id: Date.now(),
+                title: title,
+                message: message,
+                type: 'system',
+                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('es-ES')
+            });
+        }
+
         function applyVoiceFilters(filters) {
         // 1. Reset filtros
         document.getElementById('filterType').value      = 'all';
@@ -705,59 +793,64 @@
          
         // Mostrar historial filtrado
         function displayFilteredHistory() {
-            const list = document.getElementById('fullHistoryList');
-            document.getElementById('filteredMovements').textContent = filteredActivities.length;
+        const list = document.getElementById('fullHistoryList');
+        document.getElementById('filteredMovements').textContent = filteredActivities.length;
 
-            list.innerHTML = '';
+        list.innerHTML = '';
 
-            if (filteredActivities.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🔍</div>
-                        <h3>No se encontraron movimientos</h3>
-                        <p>Intenta ajustar los filtros o buscar otro término</p>
-                    </div>
-                `;
-                return;
-            }
-
-            filteredActivities.forEach(activity => {
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                
-                let icon = '📝';
-                let typeClass = '';
-                let typeName = 'Acción';
-                
-                if (activity.type === 'add') {
-                    icon = '➕';
-                    typeClass = 'type-add';
-                    typeName = 'Agregar';
-                } else if (activity.type === 'sell') {
-                    icon = '💰';
-                    typeClass = 'type-sell';
-                    typeName = 'Venta';
-                } else if (activity.type === 'update') {
-                    icon = '🔄';
-                    typeClass = 'type-update';
-                    typeName = 'Actualización';
-                }
-                
-                item.innerHTML = `
-                    <div class="history-icon ${typeClass}">${icon}</div>
-                    <div class="history-content">
-                        <div class="history-type-badge ${typeClass}">${typeName}</div>
-                        <div class="history-text">${activity.text}</div>
-                        <div class="history-meta">
-                            <span class="history-time">🕐 ${activity.time}</span>
-                            ${activity.date ? `<span class="history-date">📅 ${activity.date}</span>` : ''}
-                            ${activity.product ? `<span class="history-product">🏷️ ${activity.product}</span>` : ''}
-                        </div>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
+        if (filteredActivities.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <h3>No se encontraron movimientos</h3>
+                    <p>Intenta ajustar los filtros o buscar otro término</p>
+                </div>
+            `;
+            return;
         }
+
+        filteredActivities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            
+            let icon = '📝';
+            let typeClass = '';
+            let typeName = 'Acción';
+            
+            if (activity.type === 'add') {
+                icon = '➕';
+                typeClass = 'type-add';
+                typeName = 'Agregar';
+            } else if (activity.type === 'sell') {
+                icon = '💰';
+                typeClass = 'type-sell';
+                typeName = 'Venta';
+            } else if (activity.type === 'update') {
+                icon = '🔄';
+                typeClass = 'type-update';
+                typeName = 'Actualización';
+            }
+            
+            // Determinar si mostrar fecha de vencimiento
+            const showExpiry = (activity.type === 'add' || activity.type === 'update') && activity.expiryDate;
+            
+            item.innerHTML = `
+                <div class="history-icon ${typeClass}">${icon}</div>
+                <div class="history-content">
+                    <div class="history-type-badge ${typeClass}">${typeName}</div>
+                    <div class="history-text">${activity.text}</div>
+                    ${activity.brand ? `<div class="history-brand">🏭 Marca: ${activity.brand}</div>` : ''}
+                    ${activity.expiryDate ? `<div class="history-expiry">📅 Vence: ${activity.expiryDate}</div>` : ''}
+                    <div class="history-meta">
+                        <span class="history-time">🕐 ${activity.time}</span>
+                        ${activity.date ? `<span class="history-date">📅 ${activity.date}</span>` : ''}
+                        ${activity.product ? `<span class="history-product">🏷️ ${activity.product}</span>` : ''}
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+    }
 
         // Limpiar filtros
         function clearFilters() {
@@ -799,7 +892,7 @@
                     const item = document.createElement('div');
                     item.className = 'home-activity-item';
                     
-                    let icon = '📝';
+                    let icon = '📦';
                     let typeClass = '';
                     if (activity.type === 'add') {
                         icon = '➕';
@@ -812,15 +905,34 @@
                         typeClass = 'type-update';
                     }
                     
-                    item.innerHTML = `
+                    // ✅ CONSTRUIR HTML CON MARCA Y FECHA DE VENCIMIENTO
+                    let htmlContent = `
                         <div class="activity-icon ${typeClass}">${icon}</div>
                         <div class="activity-content">
                             <div class="activity-text">${activity.text}</div>
+                    `;
+                    
+                    // ✅ MOSTRAR MARCA SI EXISTE
+                    if (activity.brand) {
+                        htmlContent += `<div class="activity-brand">🏭 Marca: ${activity.brand}</div>`;
+                    }
+                    
+                    // ✅ MOSTRAR FECHA DE VENCIMIENTO SI EXISTE
+                    if (activity.expiryDate) {
+                        htmlContent += `<div class="activity-expiry">📅 Vence: ${activity.expiryDate}</div>`;
+                    }
+                    
+                    htmlContent += `
                             <div class="activity-time">🕐 ${activity.time}</div>
                         </div>
                     `;
+                    
+                    item.innerHTML = htmlContent;
                     list.appendChild(item);
                 });
+                
+                console.log(`✅ ${activities.length} actividades cargadas (mostrando máximo 15)`);
+                
             } catch (error) {
                 console.error('Error cargando actividades de inicio:', error);
             }
@@ -860,6 +972,7 @@
                     card.innerHTML = `
                         <div class="interactive-badge">🎯 ACTIVO</div>
                         <div class="product-name">${product.name}</div>
+                        <div class="product-brand">🏭 Marca: ${product.brand || 'Sin marca'}</div>
                         <div class="product-category">
                             🏷️ ${product.category}
                         </div>
@@ -867,6 +980,7 @@
                             <div class="stock-main">📦 Stock: <strong>${product.stock}</strong> unidades</div>
                             <div class="stock-min">⚠️ Mínimo: ${product.minStock}</div>
                         </div>
+                        ${product.expiryDate ? `<div class="product-expiry">📅 Vence: ${product.expiryDate}</div>` : ''}
                         ${product.stock <= product.minStock ? '<div class="low-stock-warning">⚠️ Stock Bajo</div>' : ''}
                     `;
                     
@@ -897,8 +1011,10 @@
                                 <span class="product-name">${product.name}</span>
                             </div>
                             <div class="alert-details">
+                                ${product.brand ? `<div class="alert-brand">🏭 Marca: ${product.brand}</div>` : ''}
                                 <div>Stock actual: <strong>${product.stock} unidades</strong></div>
                                 <div>Mínimo requerido: ${product.minStock} unidades</div>
+                                ${product.expiryDate ? `<div class="alert-expiry">📅 Vence: ${product.expiryDate}</div>` : ''}
                                 <div class="alert-urgency">${product.urgency}</div>
                             </div>
                         `;
@@ -978,34 +1094,52 @@
         return true;
     }
 
-    function startNewNotificationsPolling() {
-    if (newNotificationsInterval) return;
+function startNewNotificationsPolling() {
+    if (newNotificationsInterval) {
+        clearInterval(newNotificationsInterval);
+    }
     
-    console.log('🔄 Polling de notificaciones nuevas activado (cada 3 segundos)');
+    console.log('🔄 Polling de notificaciones nuevas activado (cada 5 segundos)');
     
     newNotificationsInterval = setInterval(async () => {
+        // Solo hacer polling si NO estamos en la pestaña de notificaciones
+        const isActiveTab = document.getElementById('notifications-tab').classList.contains('active');
+        if (isActiveTab) {
+            return;
+        }
+        
         try {
             const response = await fetch('/api/notifications/new');
             const data = await response.json();
             
             if (data.success && data.count > 0) {
-                console.log(`📢 ${data.count} notificaciones nuevas detectadas`);
+                console.log(`📢 ${data.count} nuevas notificaciones recibidas del servidor`);
                 
-                // Mostrar toast para cada nueva notificación
+                let newNotificationsShown = 0;
+                
+                // Mostrar toast SOLO para notificaciones que NO hemos mostrado antes
                 data.notifications.forEach(notification => {
-                    showToastNotification(notification);
+                    if (!shownNotificationIds.has(notification.id)) {
+                        showToastNotification(notification);
+                        shownNotificationIds.add(notification.id);
+                        newNotificationsShown++;
+                        console.log(`✅ Notificación ${notification.id} mostrada`);
+                    }
                 });
                 
-                // Actualizar la lista de notificaciones si está visible
-                if (document.getElementById('notifications-tab').classList.contains('active')) {
-                    loadNotifications();
+                // ⭐ INCREMENTAR el contador del badge solo con notificaciones realmente nuevas
+                if (newNotificationsShown > 0) {
+                    badgeCounter += newNotificationsShown;
+                    updateNotificationBadge(badgeCounter);
+                    console.log(`🔢 Badge actualizado: ${badgeCounter} notificaciones pendientes`);
                 }
             }
+            
         } catch (error) {
             console.error('Error en polling de notificaciones:', error);
         }
-    }, 3000); // Cada 3 segundos
-}    
+    }, 5000);
+}
 
     function showToastNotification(notification) {
     // Crear elemento toast
@@ -1020,10 +1154,6 @@
     if (notification.type === 'low-stock') {
         icon = '⚠️';
         typeClass = 'warning';
-        
-        // 🎵 Opcional: Reproducir sonido de alerta (descomenta si quieres)
-        // const audio = new Audio('/static/sounds/alert.mp3');
-        // audio.play().catch(e => console.log('Sonido no disponible:', e));
     } else if (notification.type === 'sale') {
         icon = '💰';
         typeClass = 'success';
@@ -1040,7 +1170,7 @@
             <div class="toast-message">${notification.message}</div>
             <div class="toast-time">🕐 ${notification.time} - ${notification.date}</div>
         </div>
-        <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+        <button class="toast-close" onclick="closeToast('toast-${notification.id}')">✕</button>
     `;
     
     // Añadir al body
@@ -1049,27 +1179,24 @@
     // Animación de entrada
     setTimeout(() => toast.classList.add('show'), 100);
     
-    // Auto-cerrar después de 8 segundos
-    const autoCloseTimeout = setTimeout(() => {
-        if (toast.parentElement) {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }
-    }, 8000);
-    
-    // Cerrar al hacer clic en el toast
-    toast.addEventListener('click', (e) => {
-        if (e.target === toast || e.target.classList.contains('toast-close')) {
-            clearTimeout(autoCloseTimeout);
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }
-    });
+    // Auto-cerrar después de 6 segundos
+    setTimeout(() => {
+        closeToast(`toast-${notification.id}`);
+    }, 6000);
     
     console.log(`📢 Toast mostrado: ${notification.title}`);
 }
 
-    async function subscribePushNotifications() {
+// 4. AGREGAR función para cerrar toasts:
+function closeToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }
+}
+
+async function subscribePushNotifications() {
     try {
         const response = await fetch('/api/notifications/subscribe', {
             method: 'POST',
@@ -1085,9 +1212,36 @@
             document.getElementById('unsubscribePushBtn').style.display = 'inline-block';
             document.getElementById('pushSubscription').style.display = 'block';
             
+            // Limpiar historial de notificaciones mostradas
+            shownNotificationIds.clear();
+            badgeCounter = 0;  // ⭐ Resetear contador
+            updateNotificationBadge(0);
+            console.log('🧹 Sistema de notificaciones reseteado');
+            
             startNotificationPolling();
-            startNewNotificationsPolling();  // ⭐ NUEVO: Polling de notificaciones nuevas
-            showNotification('Gwen', '🔔 Sistema de alertas activado');
+            startNewNotificationsPolling();
+            
+            // ⭐ Crear notificación de bienvenida CON ID único
+            const welcomeNotification = {
+                id: Date.now(),
+                title: 'Gwen',
+                message: '🔔 Sistema de alertas activado',
+                type: 'system',
+                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('es-ES')
+            };
+            
+            // ⭐ REGISTRAR en shownNotificationIds ANTES de mostrar
+            shownNotificationIds.add(welcomeNotification.id);
+            
+            // Mostrar toast
+            showToastNotification(welcomeNotification);
+            
+            // Incrementar contador
+            badgeCounter++;
+            updateNotificationBadge(badgeCounter);
+            console.log('✅ Notificación de bienvenida registrada y mostrada');
+            
             loadNotifications();
         }
         
@@ -1096,6 +1250,7 @@
         alert('Error activando alertas: ' + error.message);
     }
 }
+
 
     function startNotificationPolling() {
         if (notificationInterval) return;
@@ -1124,79 +1279,104 @@
     }
 
 async function unsubscribePushNotifications() {
-    clearInterval(notificationInterval);
-    clearInterval(newNotificationsInterval);  // ⭐ NUEVO: Limpiar polling de notificaciones
-    notificationInterval = null;
-    newNotificationsInterval = null;
+    // Limpiar intervals
+    if (notificationInterval) {
+        clearInterval(notificationInterval);
+        notificationInterval = null;
+    }
+    if (newNotificationsInterval) {
+        clearInterval(newNotificationsInterval);
+        newNotificationsInterval = null;
+    }
+    
     isSubscribedToNotifications = false;
-        try {
-            await fetch('/api/notifications/unsubscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        } catch (error) {
-            console.error('Error desuscribiendo:', error);
+    
+    try {
+        await fetch('/api/notifications/unsubscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (error) {
+        console.error('Error desuscribiendo:', error);
+    }
+    
+    // Actualizar UI
+    document.getElementById('subscriptionStatus').textContent = '❌ Alertas Desactivadas';
+    document.getElementById('subscribePushBtn').style.display = 'inline-block';
+    document.getElementById('unsubscribePushBtn').style.display = 'none';
+    
+    showToastNotification({
+        id: Date.now(),
+        title: 'Gwen',
+        message: '🔇 Alertas desactivadas',
+        type: 'system',
+        time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString('es-ES')
+    });
+    
+    // ⭐ Resetear badge y contador
+    badgeCounter = 0;
+    updateNotificationBadge(0);
+    console.log('🔢 Badge y contador reseteados');
+}
+
+    // 🔴 REEMPLAZA LA FUNCIÓN loadNotifications
+async function loadNotifications() {
+    try {
+        const response = await fetch('/api/notifications/history');
+        const notifications = await response.json();
+        
+        console.log('📥 Notificaciones cargadas:', notifications.length);
+        
+        const list = document.getElementById('notificationsList');
+        list.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <h3>No hay notificaciones</h3>
+                    <p>Las alertas de stock bajo aparecerán aquí</p>
+                </div>
+            `;
+            return;
         }
         
-        document.getElementById('subscriptionStatus').textContent = '❌ Alertas Desactivadas';
-        document.getElementById('subscribePushBtn').style.display = 'inline-block';
-        document.getElementById('unsubscribePushBtn').style.display = 'none';
-        
-        showNotification('Gwen', '🔇 Alertas desactivadas');
-    }
-
-    async function loadNotifications() {
-        try {
-            const response = await fetch('/api/notifications/history');
-            const notifications = await response.json();
+        notifications.forEach(notification => {
+            const item = document.createElement('div');
+            item.className = 'notification-item';
             
-            const list = document.getElementById('notificationsList');
-            list.innerHTML = '';
+            let icon = '🔔';
+            let typeClass = 'system';
             
-            if (notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🔔</div>
-                        <h3>No hay notificaciones</h3>
-                        <p>Las alertas de stock bajo aparecerán aquí</p>
-                    </div>
-                `;
-                return;
+            if (notification.type === 'low-stock') {
+                icon = '⚠️';
+                typeClass = 'low-stock';
+            } else if (notification.type === 'sale') {
+                icon = '💰';
+                typeClass = 'sale';
             }
             
-            notifications.forEach(notification => {
-                const item = document.createElement('div');
-                item.className = 'notification-item';
-                
-                let icon = '🔔';
-                let typeClass = 'system';
-                
-                if (notification.type === 'low-stock') {
-                    icon = '⚠️';
-                    typeClass = 'low-stock';
-                } else if (notification.type === 'sale') {
-                    icon = '💰';
-                    typeClass = 'sale';
-                }
-                
-                item.innerHTML = `
-                    <div class="notification-icon ${typeClass}">${icon}</div>
-                    <div class="notification-content">
-                        <div class="notification-title">${notification.title}</div>
-                        <div class="notification-text">${notification.message}</div>
-                        <div class="notification-time">
-                            🕐 ${notification.time} - ${notification.date}
-                            ${notification.urgency ? `<span style="margin-left: 10px; padding: 2px 6px; background: #ff9800; color: white; border-radius: 4px; font-size: 10px;">${notification.urgency}</span>` : ''}
-                        </div>
+            item.innerHTML = `
+                <div class="notification-icon ${typeClass}">${icon}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-text">${notification.message}</div>
+                    ${notification.brand ? `<div class="notification-brand">🏭 Marca: ${notification.brand}</div>` : ''}
+                    ${notification.expiryDate ? `<div class="notification-expiry">📅 Vence: ${notification.expiryDate}</div>` : ''}
+                    <div class="notification-time">
+                        🕐 ${notification.time} - ${notification.date}
+                        ${notification.urgency ? `<span style="margin-left: 10px; padding: 2px 6px; background: #ff9800; color: white; border-radius: 4px; font-size: 10px;">${notification.urgency}</span>` : ''}
                     </div>
-                `;
-                list.appendChild(item);
-            });
-            
-        } catch (error) {
-            console.error('Error cargando notificaciones:', error);
-        }
+                </div>
+            `;
+            list.appendChild(item);
+        });
+        
+    } catch (error) {
+        console.error('Error cargando notificaciones:', error);
     }
+}
 
     let newNotificationsInterval = null;
 

@@ -25,81 +25,94 @@ class Transcriber:
         self.microphone = sr.Microphone()
         self.is_running = False
         self.listen_thread = None
-        self.audio_queue = queue.Queue()
         
-        # Configuración optimizada
-        self.recognizer.pause_threshold = 1.8
-        self.recognizer.energy_threshold = 80
-        self.recognizer.dynamic_energy_threshold = True
-        self.recognizer.dynamic_energy_adjustment_damping = 0.1
-        self.recognizer.dynamic_energy_adjustment_ratio = 2.5
-        self.recognizer.operation_timeout = None
-        self.recognizer.phrase_threshold = 0.1
-        self.recognizer.non_speaking_duration = 1.5
-        
-        # ⭐ WAKE WORDS RESTRINGIDAS - Solo estas 6
+        # ⭐ OPTIMIZACIÓN 1: Wake words más específicas y reducidas
         self.wake_words = {
-            'wen',
-            'gwen', 
+            'gwen',      # Principal
+            'wen',       # Variante corta
+            'gen',       # Variante fonética
             'gueen',
-            'genn',
             'uen',
-            'bueno'
+            'bueno',
+            'buen'
         }
         
-        # ⭐ COMANDOS COMPUESTOS ESPECIALES (wake word + vendí en una palabra)
+        # ⭐ OPTIMIZACIÓN 2: Comandos compuestos optimizados
         self.compound_commands = {
-            'gendy': 'vendí',
             'wendy': 'vendí',
             'gwendi': 'vendí',
-            'gendi': 'vendí'
+            'gendi': 'vendí',
+            'gendy': 'vendí',
         }
+        
+        # ⭐ OPTIMIZACIÓN 3: Configuración mejorada del reconocedor
+        self.recognizer.pause_threshold = 1.2  # Reducido de 1.8
+        self.recognizer.energy_threshold = 300  # Aumentado de 80
+        self.recognizer.dynamic_energy_threshold = True
+        self.recognizer.dynamic_energy_adjustment_damping = 0.15
+        self.recognizer.dynamic_energy_adjustment_ratio = 1.5
+        self.recognizer.phrase_threshold = 0.3  # Aumentado de 0.1
+        self.recognizer.non_speaking_duration = 0.8  # Reducido de 1.5
+        
+        # ⭐ OPTIMIZACIÓN 4: Cache de transcripciones recientes
+        self.recent_transcriptions = []
+        self.max_cache_size = 5
         
         self._calibrate_microphone()
     
     def _calibrate_microphone(self):
-        """Calibración con máxima sensibilidad"""
+        """Calibración optimizada con ajuste automático"""
         print("🔧 Calibrando micrófono...")
         try:
             with self.microphone as source:
-                print("   📊 Analizando ruido ambiente (4 segundos)...")
-                self.recognizer.adjust_for_ambient_noise(source, duration=4)
+                print("   📊 Analizando ruido ambiente (2 segundos)...")
+                self.recognizer.adjust_for_ambient_noise(source, duration=2)
                 
-                if self.recognizer.energy_threshold > 200:
-                    self.recognizer.energy_threshold = 100
-                elif self.recognizer.energy_threshold < 50:
-                    self.recognizer.energy_threshold = 80
+                # ⭐ OPTIMIZACIÓN 5: Ajuste dinámico basado en ambiente
+                if self.recognizer.energy_threshold < 200:
+                    self.recognizer.energy_threshold = 300
+                    print(f"   ⚙️ Ajustado a threshold mínimo: 300")
+                elif self.recognizer.energy_threshold > 4000:
+                    self.recognizer.energy_threshold = 2000
+                    print(f"   ⚙️ Ajustado a threshold máximo: 2000")
                 
                 print(f"   ✅ Energy threshold: {self.recognizer.energy_threshold}")
                 print(f"   ✅ Pause threshold: {self.recognizer.pause_threshold}s")
                 
         except Exception as e:
             print(f"⚠️ Advertencia al calibrar: {e}")
-            self.recognizer.energy_threshold = 100
+            self.recognizer.energy_threshold = 300
     
     def _calculate_similarity(self, word1, word2):
-        """Calcular similitud entre dos palabras"""
-        similarity1 = SequenceMatcher(None, word1.lower(), word2.lower()).ratio()
+        """⭐ OPTIMIZACIÓN 6: Similitud mejorada con peso fonético"""
+        word1_lower = word1.lower()
+        word2_lower = word2.lower()
         
-        set1 = set(word1.lower())
-        set2 = set(word2.lower())
+        # Similitud de secuencia (Levenshtein-like)
+        similarity1 = SequenceMatcher(None, word1_lower, word2_lower).ratio()
+        
+        # Similitud de caracteres comunes
+        set1 = set(word1_lower)
+        set2 = set(word2_lower)
         common = len(set1 & set2)
         total = len(set1 | set2)
         similarity2 = common / total if total > 0 else 0
         
-        if word1.lower().startswith(word2.lower()[:2]) or word2.lower().startswith(word1.lower()[:2]):
-            similarity3 = 0.7
+        # ⭐ MEJORA: Bonus por inicio similar (fonética)
+        if len(word1_lower) >= 2 and len(word2_lower) >= 2:
+            if word1_lower[:2] == word2_lower[:2]:
+                similarity3 = 0.8
+            else:
+                similarity3 = 0
         else:
             similarity3 = 0
         
-        return max(similarity1, similarity2, similarity3)
+        # Promedio ponderado optimizado
+        return (similarity1 * 0.5 + similarity2 * 0.3 + similarity3 * 0.2)
     
     def _detect_compound_command(self, text):
-        """
-        Detectar comandos compuestos especiales (gendy = gwen + vendí)
-        Retorna: (es_compuesto, acción_expandida, resto_del_texto)
-        """
-        if not text:
+        """⭐ OPTIMIZACIÓN 7: Detección más rápida de comandos compuestos"""
+        if not text or len(text) < 3:
             return False, None, None
         
         text_lower = text.lower().strip()
@@ -110,84 +123,70 @@ class Transcriber:
         
         first_word = words[0]
         
-        # Buscar coincidencia exacta
-        for compound, action in self.compound_commands.items():
-            if first_word == compound:
-                rest = ' '.join(words[1:])
-                print(f"🎯 COMANDO COMPUESTO: '{compound}' → 'gwen {action} {rest}'")
-                return True, action, rest
-            
-            # Similitud alta para variaciones de pronunciación
-            if len(first_word) >= 4:
+        # Búsqueda exacta primero (más rápido)
+        if first_word in self.compound_commands:
+            rest = ' '.join(words[1:])
+            print(f"🎯 COMANDO COMPUESTO: '{first_word}' → 'gwen {self.compound_commands[first_word]} {rest}'")
+            return True, self.compound_commands[first_word], rest
+        
+        # Solo buscar similitud si la palabra tiene longitud razonable
+        if len(first_word) >= 4:
+            for compound, action in self.compound_commands.items():
                 similarity = self._calculate_similarity(first_word, compound)
-                if similarity >= 0.80:
+                if similarity >= 0.85:  # Aumentado de 0.80
                     rest = ' '.join(words[1:])
-                    print(f"🎯 COMANDO COMPUESTO SIMILAR: '{first_word}' ≈ '{compound}' ({similarity:.2%}) → 'gwen {action} {rest}'")
+                    print(f"🎯 COMANDO COMPUESTO SIMILAR: '{first_word}' ≈ '{compound}' ({similarity:.2%})")
                     return True, action, rest
         
         return False, None, None
     
     def _has_command_words(self, text):
-        """
-        ⭐ NUEVA FUNCIÓN: Verificar si el texto contiene palabras de comando
-        Solo se activa Gwen si hay un comando presente
-        """
-        if not text:
+        if not text or len(text) < 3:
             return False
         
         text_lower = text.lower()
         
-        # Palabras clave que indican comandos válidos
-        command_keywords = [
-            # Acciones
-            'agrega', 'agregar', 'añade', 'añadir', 'pon', 'poner', 'mete', 'meter',
-            'vendí', 'vender', 'vende', 'vendido', 'vendimos',
-            'actualiza', 'actualizar', 'cambia', 'cambiar', 'modifica', 'modificar',
-            'muestra', 'mostrar', 'ver', 'consultar', 'buscar', 'filtra', 'filtrar',
+        # ⭐ MEJORA: Usar sets para búsqueda O(1)
+        command_keywords = {
+            # Acciones principales
+            'agrega', 'agregar', 'añade', 'añadir', 'pon', 'poner',
+            'vendí', 'vender', 'vende', 'vendido',
+            'actualiza', 'actualizar', 'cambia', 'cambiar',
+            'muestra', 'mostrar', 'ver', 'consultar',
             'cuánto', 'cuanto', 'hay',
             
-            # Tipos de movimientos
-            'venta', 'ventas', 'salida', 'salidas',
-            'entrada', 'entradas', 'compra', 'compras',
-            'movimiento', 'movimientos', 'historial',
+            # ⭐ Comandos de apagado + VARIANTES FONÉTICAS
+            'apagar', 'apágate', 'apagate', 'desactivar', 'detener', 
+            'stop', 'adiós', 'adios', 'chao', 'bye',
+            'pagar', 'pagate',
+            
+            # Productos más comunes (reducido)
+            'arroz', 'leche', 'pan', 'galleta', 'atún', 'agua',
+            'aceite', 'azúcar', 'sal', 'café', 'huevo',
             
             # Temporales
-            'hoy', 'ayer', 'semana', 'mes',
-            
-            # Productos comunes (para detectar contexto)
-            'arroz', 'frijol', 'aceite', 'azúcar', 'sal', 'leche', 'galleta',
-            'jabón', 'atún', 'café', 'pan', 'huevo', 'pasta', 'tomate',
-            'cebolla', 'papa', 'zanahoria', 'pollo', 'carne', 'refresco',
-            'agua', 'yogurt', 'mantequilla', 'queso', 'shampoo',
-            
-            # Números (indica cantidad)
-            'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez',
-            'once', 'doce', 'quince', 'veinte', 'treinta', 'docena',
-            
-            # Unidades
-            'unidad', 'unidades', 'kilo', 'kilos', 'gramo', 'gramos',
-            'litro', 'litros', 'paquete', 'paquetes', 'lata', 'latas',
-            'bolsa', 'bolsas', 'caja', 'cajas'
-        ]
+            'hoy', 'ayer', 'semana'
+        }
         
-        # Verificar si contiene números
+        # Verificar números primero (más rápido)
         if any(char.isdigit() for char in text_lower):
             print(f"   ✅ Tiene números - Es comando válido")
             return True
         
-        # Verificar palabras clave
-        for keyword in command_keywords:
-            if keyword in text_lower:
-                print(f"   ✅ Contiene '{keyword}' - Es comando válido")
-                return True
+        # ⭐ NUEVO: Limpiar puntuación de las palabras antes de comparar
+        import re
+        text_words = set(re.sub(r'[^\w\s]', '', text_lower).split())  # Elimina puntuación
+        
+        if text_words & command_keywords:  # Intersección de sets
+            matching = text_words & command_keywords
+            print(f"   ✅ Contiene palabra clave: {matching}")
+            return True
         
         print(f"   ❌ No contiene palabras de comando")
         return False
     
     def _is_wake_word_detected(self, text):
-        """
-        ⭐ DETECCIÓN MEJORADA: Solo activa si tiene wake word + comando
-        """
+        """⭐ OPTIMIZACIÓN 9: Detección más precisa y rápida"""
         if not text or len(text.strip()) < 3:
             return False
         
@@ -196,35 +195,30 @@ class Transcriber:
         
         print(f"🔍 Analizando: '{text_lower}'")
         
-        # CASO ESPECIAL 1: Comandos compuestos (siempre válidos)
-        is_compound, _, rest = self._detect_compound_command(text_lower)
-        if is_compound:
-            # Verificar que tenga algo después del comando compuesto
-            if rest and len(rest) >= 2:
-                print(f"✅ Comando compuesto con parámetros: '{rest}'")
-                return True
-            else:
-                print(f"❌ Comando compuesto sin parámetros")
-                return False
+        # CASO 1: Comandos compuestos (prioridad máxima)
+        is_compound, action, rest = self._detect_compound_command(text_lower)
+        if is_compound and rest and len(rest) >= 3:
+            print(f"✅ Comando compuesto válido: '{action} {rest}'")
+            return True
         
-        # CASO NORMAL: Wake word + comando
+        # CASO 2: Wake word normal
         wake_word_found = False
         wake_word_position = -1
         
-        # Buscar wake word en las primeras 3 palabras
-        for i, word in enumerate(words[:3]):
-            # Coincidencia exacta
+        # ⭐ MEJORA: Solo revisar las primeras 2 palabras (más rápido)
+        for i, word in enumerate(words[:2]):
+            # Coincidencia exacta primero
             if word in self.wake_words:
                 wake_word_found = True
                 wake_word_position = i
-                print(f"🎯 Wake word encontrada: '{word}' en posición {i}")
+                print(f"🎯 Wake word exacta: '{word}' en posición {i}")
                 break
             
-            # Similitud alta (>=70%)
-            for wake_word in self.wake_words:
-                if len(word) >= 2:
+            # Similitud solo para palabras >=3 caracteres
+            if len(word) >= 3:
+                for wake_word in self.wake_words:
                     similarity = self._calculate_similarity(word, wake_word)
-                    if similarity >= 0.70:
+                    if similarity >= 0.75:  # Aumentado de 0.70
                         wake_word_found = True
                         wake_word_position = i
                         print(f"🎯 Wake word similar: '{word}' ≈ '{wake_word}' ({similarity:.2%})")
@@ -234,57 +228,50 @@ class Transcriber:
                 break
         
         if not wake_word_found:
-            print(f"❌ No se encontró wake word en las primeras palabras")
+            print(f"❌ No se encontró wake word")
             return False
         
-        # ⭐ VALIDACIÓN CRÍTICA: Debe tener comando después de la wake word
+        # Validar comando después de wake word
         remaining_text = ' '.join(words[wake_word_position + 1:])
         
-        if not remaining_text or len(remaining_text) < 2:
-            print(f"❌ Wake word sin comando: '{text_lower}'")
+        if not remaining_text or len(remaining_text) < 3:
+            print(f"❌ Wake word sin comando suficiente")
             return False
         
-        # Verificar que el texto restante tenga palabras de comando
         if self._has_command_words(remaining_text):
             print(f"✅ Wake word + comando válido: '{remaining_text}'")
             return True
-        else:
-            print(f"❌ Wake word detectada pero sin comando válido")
-            return False
+        
+        print(f"❌ Wake word sin palabras de comando")
+        return False
     
     def _extract_command_after_wake_word(self, text):
-        """Extraer y expandir comando"""
+        """⭐ OPTIMIZACIÓN 10: Extracción optimizada de comandos"""
         if not text:
             return None
         
         text_lower = text.lower().strip()
-        
         print(f"🔧 Extrayendo comando de: '{text_lower}'")
         
-        # CASO 1: Comando compuesto - expandir automáticamente
+        # CASO 1: Comando compuesto
         is_compound, action, rest = self._detect_compound_command(text_lower)
+        if is_compound and rest and len(rest) >= 3:
+            expanded = f"{action} {rest}".strip()
+            print(f"   ✅ Comando expandido: '{expanded}'")
+            return expanded
         
-        if is_compound:
-            if rest and len(rest) >= 2:
-                expanded_command = f"{action} {rest}".strip()
-                print(f"   ✅ COMANDO EXPANDIDO: '{expanded_command}'")
-                return expanded_command
-            else:
-                print(f"   ❌ Comando compuesto sin parámetros")
-                return None
-        
-        # CASO 2: Wake word normal - remover y extraer comando
+        # CASO 2: Wake word normal
         words = text_lower.split()
-        
-        # Buscar posición de wake word
         wake_word_position = -1
-        for i, word in enumerate(words[:3]):
+        
+        # Buscar posición de wake word (solo primeras 2 palabras)
+        for i, word in enumerate(words[:2]):
             if word in self.wake_words:
                 wake_word_position = i
                 break
             
             for wake_word in self.wake_words:
-                if self._calculate_similarity(word, wake_word) >= 0.70:
+                if self._calculate_similarity(word, wake_word) >= 0.75:
                     wake_word_position = i
                     break
             
@@ -295,21 +282,22 @@ class Transcriber:
             print(f"   ❌ No se encontró wake word")
             return None
         
-        # Extraer todo después de la wake word
+        # Extraer comando
         command = ' '.join(words[wake_word_position + 1:])
         
         if command and len(command) >= 3:
             print(f"   ✅ Comando extraído: '{command}'")
             return command
         
-        print(f"   ❌ Comando muy corto o vacío")
+        print(f"   ❌ Comando vacío o muy corto")
         return None
     
-    def _record_audio(self, timeout=10, phrase_time_limit=30):
-        """Grabación con timeouts máximos"""
+    def _record_audio(self, timeout=8, phrase_time_limit=20):
+        """⭐ OPTIMIZACIÓN 11: Grabación más eficiente"""
         try:
             with self.microphone as source:
-                self.recognizer.adjust_for_ambient_noise(source, duration=0.3)
+                # Ajuste rápido de ruido (0.2s en lugar de 0.3s)
+                self.recognizer.adjust_for_ambient_noise(source, duration=0.2)
                 
                 print(f"🎤 Grabando... (max {phrase_time_limit}s)")
                 
@@ -330,43 +318,48 @@ class Transcriber:
             return None
     
     def _transcribe_audio(self, audio):
-        """Transcribir audio con múltiples métodos"""
+        """⭐ OPTIMIZACIÓN 12: Priorización inteligente de servicios"""
         if not audio:
             return None
         
-        # Google ES
-        try:
-            print("🔄 Transcribiendo con Google (es-ES)...")
-            text = self.recognizer.recognize_google(audio, language='es-ES')
-            if text:
-                print(f"✅ Google: '{text}'")
-                return text.lower().strip()
-        except sr.UnknownValueError:
-            print("❓ Google no entendió")
-        except sr.RequestError as e:
-            print(f"⚠️ Error Google API: {e}")
+        transcription_methods = [
+            ("Groq Whisper", self._transcribe_with_groq),
+            ("Google ES", lambda a: self.recognizer.recognize_google(a, language='es-ES')),
+            ("Google MX", lambda a: self.recognizer.recognize_google(a, language='es-MX'))
+        ]
         
-        # Google MX
-        try:
-            print("🔄 Google (es-MX)...")
-            text = self.recognizer.recognize_google(audio, language='es-MX')
-            if text:
-                print(f"✅ Google MX: '{text}'")
-                return text.lower().strip()
-        except:
-            pass
-        
-        # Groq Whisper
-        try:
-            print("🔄 Groq Whisper...")
-            return self._transcribe_with_groq(audio)
-        except Exception as e:
-            print(f"❌ Groq falló: {e}")
+        for method_name, method in transcription_methods:
+            try:
+                print(f"🔄 Transcribiendo con {method_name}...")
+                text = method(audio)
+                
+                if text:
+                    text_clean = text.lower().strip()
+                    
+                    # ⭐ MEJORA: Evitar transcripciones repetidas
+                    if text_clean in self.recent_transcriptions:
+                        print(f"⚠️ Transcripción duplicada, ignorando")
+                        continue
+                    
+                    # Agregar a cache
+                    self.recent_transcriptions.append(text_clean)
+                    if len(self.recent_transcriptions) > self.max_cache_size:
+                        self.recent_transcriptions.pop(0)
+                    
+                    print(f"✅ {method_name}: '{text_clean}'")
+                    return text_clean
+                    
+            except sr.UnknownValueError:
+                print(f"❌ {method_name} no entendió")
+            except sr.RequestError as e:
+                print(f"⚠️ Error {method_name} API: {e}")
+            except Exception as e:
+                print(f"❌ {method_name} falló: {e}")
         
         return None
     
     def _transcribe_with_groq(self, audio):
-        """Transcribir usando Groq Whisper"""
+        """Transcripción optimizada con Groq"""
         try:
             temp_file = "temp_audio.wav"
             with open(temp_file, "wb") as f:
@@ -378,7 +371,7 @@ class Transcriber:
                     model="whisper-large-v3",
                     language="es",
                     response_format="text",
-                    temperature=0.2
+                    temperature=0.0  # ⭐ Reducido de 0.2 para más consistencia
                 )
             
             try:
@@ -388,7 +381,6 @@ class Transcriber:
             
             result = transcription.strip()
             if result:
-                print(f"✅ Groq: '{result}'")
                 return result.lower()
             return None
             
@@ -397,7 +389,7 @@ class Transcriber:
             return None
     
     def start_wake_word_system(self, on_command_callback):
-        """Sistema de escucha con activación condicional"""
+        """⭐ OPTIMIZACIÓN 13: Loop de escucha más eficiente"""
         if self.is_running:
             print("⚠️ Sistema ya corriendo")
             return
@@ -406,24 +398,25 @@ class Transcriber:
         
         def listen_loop():
             print("\n" + "="*60)
-            print("🎯 SISTEMA DE VOZ ACTIVADO")
-            print("📋 Wake words: wen, gwen, gueen, genn, uen, bueno")
-            print("⭐ Especiales: gendy, wendy, gwendi, gendi = 'gwen vendí'")
-            print("")
-            print("💡 IMPORTANTE: Debes decir wake word + comando")
-            print("   ✅ 'Gwen vendí 5 galletas'")
-            print("   ✅ 'Gendy 3 leches'")
-            print("   ✅ 'Uen agrega 10 arroz'")
-            print("   ❌ 'Gwen' (solo, sin comando)")
+            print("🎯 SISTEMA DE VOZ OPTIMIZADO ACTIVADO")
+            print("📋 Wake words: gwen, wen, guen")
+            print("⭐ Especiales: wendy, gwendi, gendi = 'gwen vendí'")
             print("="*60 + "\n")
             
             consecutive_errors = 0
             max_errors = 3
             successful_detections = 0
+            last_recalibration = time.time()
             
             while self.is_running:
                 try:
-                    audio = self._record_audio(timeout=10, phrase_time_limit=30)
+                    # ⭐ MEJORA: Recalibración periódica cada 2 minutos
+                    if time.time() - last_recalibration > 120:
+                        print("🔄 Recalibración automática...")
+                        self._calibrate_microphone()
+                        last_recalibration = time.time()
+                    
+                    audio = self._record_audio(timeout=8, phrase_time_limit=20)
                     
                     if audio is None:
                         continue
@@ -431,12 +424,11 @@ class Transcriber:
                     text = self._transcribe_audio(audio)
                     
                     if not text or len(text.strip()) < 3:
-                        print("⚠️ Texto muy corto")
+                        print("⚠️ Texto muy corto o vacío")
                         continue
                     
-                    print(f"\n🔊 Transcrito: '{text}'")
+                    print(f"\n📊 Transcrito: '{text}'")
                     
-                    # Verificar wake word CON comando
                     if self._is_wake_word_detected(text):
                         print("🎉 ¡ACTIVADO!")
                         successful_detections += 1
@@ -447,7 +439,7 @@ class Transcriber:
                             print(f"✅ Ejecutando: '{command}'")
                             consecutive_errors = 0
                             on_command_callback(command)
-                            time.sleep(2)
+                            time.sleep(1.5)  # Reducido de 2s
                         else:
                             print("❌ No se pudo extraer comando válido")
                     else:
@@ -456,20 +448,20 @@ class Transcriber:
                     consecutive_errors = 0
                     
                 except KeyboardInterrupt:
-                    print("\n🛑 Detenido")
+                    print("\n🛑 Detenido por usuario")
                     break
                 except Exception as e:
                     print(f"❌ Error: {e}")
                     consecutive_errors += 1
-                    time.sleep(0.5)
                     
                     if consecutive_errors >= max_errors:
-                        print(f"⚠️ Recalibrando...")
+                        print(f"⚠️ Recalibrando por errores consecutivos...")
                         self._calibrate_microphone()
                         consecutive_errors = 0
-                        time.sleep(2)
+                        last_recalibration = time.time()
+                        time.sleep(1)
             
-            print(f"\n📊 Detecciones: {successful_detections}")
+            print(f"\n📊 Detecciones exitosas: {successful_detections}")
             print("🔇 Sistema detenido")
         
         self.listen_thread = threading.Thread(target=listen_loop, daemon=True)
@@ -477,9 +469,10 @@ class Transcriber:
         print("✅ Sistema iniciado")
     
     def stop_all(self):
-        """Detener sistema"""
+        """Detener sistema limpiamente"""
         print("🛑 Deteniendo...")
         self.is_running = False
         if self.listen_thread:
             self.listen_thread.join(timeout=2)
+        self.recent_transcriptions.clear()
         print("✅ Detenido")

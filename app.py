@@ -33,41 +33,42 @@ notifications_history = []
 
 # ⭐ DICCIONARIO GLOBAL PARA CONTROL DE NOTIFICACIONES ENVIADAS
 product_notification_state = {}
+product_expiry_notification_state = {}
 
 print("🧹 Limpiando notificaciones iniciales...")
 notifications_history.clear()
 
 inventory = [
-    {"id": 1, "name": "Arroz", "category": "Granos", "stock": 25, "minStock": 10},
-    {"id": 2, "name": "Frijoles", "category": "Granos", "stock": 18, "minStock": 8},
-    {"id": 3, "name": "Aceite", "category": "Aceites", "stock": 12, "minStock": 5},
-    {"id": 4, "name": "Azúcar", "category": "Endulzantes", "stock": 30, "minStock": 10},
-    {"id": 5, "name": "Sal", "category": "Condimentos", "stock": 15, "minStock": 5},
-    {"id": 6, "name": "Leche", "category": "Lácteos", "stock": 8, "minStock": 10},
-    {"id": 7, "name": "Galletas", "category": "Snacks", "stock": 22, "minStock": 15},
-    {"id": 8, "name": "Jabón", "category": "Limpieza", "stock": 14, "minStock": 10},
-    {"id": 9, "name": "Atún", "category": "Enlatados", "stock": 15, "minStock": 8},
-    {"id": 10, "name": "Café", "category": "Bebidas", "stock": 20, "minStock": 10},
-    {"id": 11, "name": "Pan", "category": "Panadería", "stock": 5, "minStock": 10},
-    {"id": 12, "name": "Huevos", "category": "Lácteos", "stock": 30, "minStock": 12},
-    {"id": 13, "name": "Pasta", "category": "Granos", "stock": 25, "minStock": 10},
-    {"id": 14, "name": "Tomate", "category": "Verduras", "stock": 8, "minStock": 15},
-    {"id": 15, "name": "Cebolla", "category": "Verduras", "stock": 12, "minStock": 10},
-    {"id": 16, "name": "Papa", "category": "Verduras", "stock": 40, "minStock": 20},
-    {"id": 17, "name": "Zanahoria", "category": "Verduras", "stock": 18, "minStock": 12},
-    {"id": 18, "name": "Pollo", "category": "Carnes", "stock": 10, "minStock": 8},
-    {"id": 19, "name": "Carne", "category": "Carnes", "stock": 12, "minStock": 8},
-    {"id": 20, "name": "Refresco", "category": "Bebidas", "stock": 35, "minStock": 20},
-    {"id": 21, "name": "Agua", "category": "Bebidas", "stock": 50, "minStock": 30},
-    {"id": 22, "name": "Yogurt", "category": "Lácteos", "stock": 15, "minStock": 10},
-    {"id": 23, "name": "Mantequilla", "category": "Lácteos", "stock": 8, "minStock": 5},
-    {"id": 24, "name": "Queso", "category": "Lácteos", "stock": 10, "minStock": 8},
-    {"id": 25, "name": "Shampoo", "category": "Higiene", "stock": 12, "minStock": 8},
-    {"id": 26, "name": "Pasta Dental", "category": "Higiene", "stock": 18, "minStock": 10},
-    {"id": 27, "name": "Papel Higiénico", "category": "Higiene", "stock": 25, "minStock": 15},
-    {"id": 28, "name": "Detergente", "category": "Limpieza", "stock": 10, "minStock": 8},
-    {"id": 29, "name": "Servilletas", "category": "Limpieza", "stock": 30, "minStock": 20},
-    {"id": 30, "name": "Cereal", "category": "Desayuno", "stock": 14, "minStock": 10}
+    {"id": 1, "name": "Arroz", "brand": "Diana", "category": "Granos", "stock": 25, "minStock": 10, "expiryDate": "2026-09-15"},
+    {"id": 2, "name": "Frijoles", "brand": "La Constancia", "category": "Granos", "stock": 18, "minStock": 8, "expiryDate": "2026-04-15"},
+    {"id": 3, "name": "Aceite", "brand": "Diana", "category": "Aceites", "stock": 12, "minStock": 5, "expiryDate": "2026-10-20"},
+    {"id": 4, "name": "Azúcar", "brand": "Incauca", "category": "Endulzantes", "stock": 30, "minStock": 10, "expiryDate": "2026-05-30"},
+    {"id": 5, "name": "Sal", "brand": "Refisal", "category": "Condimentos", "stock": 15, "minStock": 5, "expiryDate": "2026-12-31"},
+    {"id": 6, "name": "Leche", "brand": "Colanta", "category": "Lácteos", "stock": 8, "minStock": 10, "expiryDate": "2025-11-25"},
+    {"id": 7, "name": "Galletas", "brand": "Fest Chip", "category": "Snacks", "stock": 22, "minStock": 15, "expiryDate": "2025-12-15"},
+    {"id": 8, "name": "Jabón", "brand": "Protex", "category": "Limpieza", "stock": 14, "minStock": 10, "expiryDate": "2027-03-15"},
+    {"id": 9, "name": "Atún", "brand": "Van Camps", "category": "Enlatados", "stock": 15, "minStock": 8, "expiryDate": "2026-01-15"},
+    {"id": 10, "name": "Café", "brand": "Sello Rojo", "category": "Bebidas", "stock": 20, "minStock": 10, "expiryDate": "2025-12-20"},
+    {"id": 11, "name": "Pan", "brand": "Bimbo", "category": "Panadería", "stock": 5, "minStock": 10, "expiryDate": "2025-11-20"},
+    {"id": 12, "name": "Huevos", "brand": "Granja San Martín", "category": "Lácteos", "stock": 30, "minStock": 12, "expiryDate": "2025-11-30"},
+    {"id": 13, "name": "Pasta", "brand": "Zuko", "category": "Granos", "stock": 25, "minStock": 10, "expiryDate": "2025-12-10"},
+    {"id": 14, "name": "Tomate", "brand": "Agrícola Fresco", "category": "Verduras", "stock": 8, "minStock": 15, "expiryDate": "2025-11-23"},
+    {"id": 15, "name": "Cebolla", "brand": "Agrícola Fresco", "category": "Verduras", "stock": 12, "minStock": 10, "expiryDate": "2025-11-25"},
+    {"id": 16, "name": "Papa", "brand": "Agrícola Fresco", "category": "Verduras", "stock": 40, "minStock": 20, "expiryDate": "2025-11-28"},
+    {"id": 17, "name": "Zanahoria", "brand": "Agrícola Fresco", "category": "Verduras", "stock": 18, "minStock": 12, "expiryDate": "2025-11-30"},
+    {"id": 18, "name": "Pollo", "brand": "Pollo Fresco", "category": "Carnes", "stock": 10, "minStock": 8, "expiryDate": "2025-11-19"},
+    {"id": 19, "name": "Carne", "brand": "Carnes Premium", "category": "Carnes", "stock": 12, "minStock": 8, "expiryDate": "2025-11-21"},
+    {"id": 20, "name": "Refresco", "brand": "Coca-Cola", "category": "Bebidas", "stock": 35, "minStock": 20, "expiryDate": "2026-01-30"},
+    {"id": 21, "name": "Agua", "brand": "Cristal", "category": "Bebidas", "stock": 50, "minStock": 30, "expiryDate": "2027-11-30"},
+    {"id": 22, "name": "Yogurt", "brand": "Alpina", "category": "Lácteos", "stock": 15, "minStock": 10, "expiryDate": "2025-11-28"},
+    {"id": 23, "name": "Mantequilla", "brand": "Colanta", "category": "Lácteos", "stock": 8, "minStock": 5, "expiryDate": "2025-12-18"},
+    {"id": 24, "name": "Queso", "brand": "Colanta", "category": "Lácteos", "stock": 10, "minStock": 8, "expiryDate": "2025-12-28"},
+    {"id": 25, "name": "Shampoo", "brand": "Head & Shoulders", "category": "Higiene", "stock": 12, "minStock": 8, "expiryDate": "2027-06-30"},
+    {"id": 26, "name": "Pasta Dental", "brand": "Colgate", "category": "Higiene", "stock": 18, "minStock": 10, "expiryDate": "2027-12-31"},
+    {"id": 27, "name": "Papel Higiénico", "brand": "Familia", "category": "Higiene", "stock": 25, "minStock": 15, "expiryDate": "2028-06-30"},
+    {"id": 28, "name": "Detergente", "brand": "Ariel", "category": "Limpieza", "stock": 10, "minStock": 8, "expiryDate": "2027-10-15"},
+    {"id": 29, "name": "Servilletas", "brand": "Familia", "category": "Limpieza", "stock": 30, "minStock": 20, "expiryDate": "2027-12-31"},
+    {"id": 30, "name": "Cereal", "brand": "Zucaritas", "category": "Desayuno", "stock": 14, "minStock": 10, "expiryDate": "2026-02-28"}
 ]
 
 # Variable para el último comando
@@ -91,31 +92,91 @@ is_processing = False
 # FUNCIÓN: GENERAR ACTIVIDADES DE EJEMPLO
 # ============================================
 def generate_sample_activities():
-    """Generar actividades de ejemplo de los últimos días"""
+    """Generar actividades de ejemplo de los últimos días - CON MARCAS"""
     activities_list = []
     now = datetime.now()
     
     sample_data = [
-        {"hours_ago": 1, "type": "sell", "product": "Pan", "text": "Venta registrada de 5 Pan"},
-        {"hours_ago": 2, "type": "add", "product": "Leche", "text": "Se agregaron 10 unidades de Leche"},
-        {"hours_ago": 3, "type": "sell", "product": "Refresco", "text": "Venta registrada de 8 Refresco"},
-        {"hours_ago": 4, "type": "update", "product": "Galletas", "text": "Stock actualizado: Galletas de 15 a 22"},
-        {"hours_ago": 5, "type": "sell", "product": "Huevos", "text": "Venta registrada de 12 Huevos"},
-        {"hours_ago": 26, "type": "add", "product": "Arroz", "text": "Se agregaron 20 unidades de Arroz"},
-        {"hours_ago": 28, "type": "sell", "product": "Café", "text": "Venta registrada de 3 Café"},
-        {"hours_ago": 50, "type": "update", "product": "Agua", "text": "Stock actualizado: Agua de 30 a 50"},
+        {
+            "hours_ago": 1, 
+            "type": "sell", 
+            "product": "Pan", 
+            "brand": "Bimbo",  # ✅ MARCA AGREGADA
+            "text": "Venta registrada de 5 Pan marca Bimbo"
+        },
+        {
+            "hours_ago": 2, 
+            "type": "add", 
+            "product": "Leche", 
+            "brand": "Colanta",  # ✅ MARCA AGREGADA
+            "text": "Se agregaron 10 unidades de Leche marca Colanta", 
+            "expiryDate": "2025-11-25"
+        },
+        {
+            "hours_ago": 3, 
+            "type": "sell", 
+            "product": "Refresco", 
+            "brand": "Coca-Cola",  # ✅ MARCA AGREGADA
+            "text": "Venta registrada de 8 Refresco marca Coca-Cola"
+        },
+        {
+            "hours_ago": 4, 
+            "type": "update", 
+            "product": "Galletas", 
+            "brand": "Fest Chip",  # ✅ MARCA AGREGADA
+            "text": "Stock actualizado: Galletas marca Fest Chip de 15 a 22", 
+            "expiryDate": "2025-12-15"
+        },
+        {
+            "hours_ago": 5, 
+            "type": "sell", 
+            "product": "Huevos", 
+            "brand": "Granja San Martín",  # ✅ MARCA AGREGADA
+            "text": "Venta registrada de 12 Huevos marca Granja San Martín"
+        },
+        {
+            "hours_ago": 26, 
+            "type": "add", 
+            "product": "Arroz", 
+            "brand": "Diana",  # ✅ MARCA AGREGADA
+            "text": "Se agregaron 20 unidades de Arroz marca Diana", 
+            "expiryDate": "2026-09-15"
+        },
+        {
+            "hours_ago": 28, 
+            "type": "sell", 
+            "product": "Café", 
+            "brand": "Sello Rojo",  # ✅ MARCA AGREGADA
+            "text": "Venta registrada de 3 Café marca Sello Rojo"
+        },
+        {
+            "hours_ago": 50, 
+            "type": "update", 
+            "product": "Agua", 
+            "brand": "Cristal",  # ✅ MARCA AGREGADA
+            "text": "Stock actualizado: Agua marca Cristal de 30 a 50", 
+            "expiryDate": "2027-11-30"
+        }
     ]
     
     for item in sample_data:
         event_time = now - timedelta(hours=item["hours_ago"])
-        activities_list.append({
+        
+        activity = {
             "time": event_time.strftime("%H:%M"),
             "date": event_time.strftime("%d/%m/%Y"),
             "fullDate": event_time.isoformat(),
             "text": item["text"],
             "type": item["type"],
-            "product": item["product"]
-        })
+            "product": item["product"],
+            "brand": item["brand"]  # ✅ MARCA INCLUIDA
+        }
+        
+        # Agregar fecha de vencimiento si existe
+        if "expiryDate" in item:
+            activity["expiryDate"] = item["expiryDate"]
+        
+        activities_list.append(activity)
     
     return activities_list
 
@@ -141,34 +202,40 @@ def get_full_datetime():
 # FUNCIONES AUXILIARES - TEXTO Y VOZ
 # ============================================
 def clean_text_for_tts(text):
-    """Limpiar texto para convertir a voz (TTS) - MEJORADO para fechas"""
-    # Primero formatear las fechas antes de limpiar otros caracteres
+    """Limpiar texto para TTS - OPTIMIZADO"""
+    import re
+    
+    # Formatear fechas primero
     text = format_dates_for_speech(text)
     
-    # Remover caracteres especiales excepto puntuación básica
-    clean_text = re.sub(r'[^\w\s¡!¿?.,;:()\-]', '', text)
+    # ⭐ MEJORA: Diccionario de reemplazos más completo
+    replacements = {
+        '✅': 'Listo',
+        '💰': 'Venta',
+        '📄': 'Actualizado',
+        '📊': 'Reporte',
+        '📦': 'Stock',
+        '❌': 'Error',
+        '⚠️': 'Atención',
+        '🔍': 'Buscando',
+        '🎯': 'Confirmado'
+    }
     
-    # Reemplazar emojis con texto
-    clean_text = clean_text.replace('✅', 'Listo')
-    clean_text = clean_text.replace('💰', 'Venta registrada')
-    clean_text = clean_text.replace('🔄', 'Actualizado')
-    clean_text = clean_text.replace('📊', 'Informe')
-    clean_text = clean_text.replace('📦', 'Stock')
-    clean_text = clean_text.replace('❌', 'Error')
-    clean_text = clean_text.replace('⚠️', 'Atención')
+    for emoji, word in replacements.items():
+        text = text.replace(emoji, word)
+    
+    # Limpiar caracteres especiales
+    text = re.sub(r'[^\w\s¡!¿?.,;:()\-áéíóúñÁÉÍÓÚÑ]', '', text)
     
     # Limpiar espacios múltiples
-    clean_text = re.sub(r'\s+', ' ', clean_text).strip()
+    text = re.sub(r'\s+', ' ', text).strip()
     
-    return clean_text
+    return text
 
 def format_dates_for_speech(text):
-    """Convertir fechas numéricas a formato hablado"""
+    """Convertir fechas a formato hablado - OPTIMIZADO"""
     try:
-        # Patrón para fechas en formato DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
-        date_patterns = [
-            r'(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})',
-        ]
+        import re
         
         months = {
             '01': 'enero', '02': 'febrero', '03': 'marzo', '04': 'abril',
@@ -177,30 +244,18 @@ def format_dates_for_speech(text):
         }
         
         def replace_date(match):
-            day = match.group(1).lstrip('0')
+            day = match.group(1).lstrip('0') or '1'
             month_num = match.group(2).zfill(2)
             year = match.group(3)
             
-            # Si el año tiene 2 dígitos, asumir siglo 21
             if len(year) == 2:
                 year = "20" + year
             
-            # Convertir mes numérico a texto
             month_name = months.get(month_num, f"mes {month_num.lstrip('0')}")
-            
             return f"{day} de {month_name} del {year}"
         
-        # Aplicar reemplazo para cada patrón de fecha
-        for pattern in date_patterns:
-            text = re.sub(pattern, replace_date, text)
-        
-        # También formatear fechas que ya están en variables (como expiry_date)
-        # Buscar patrones como "vence el 25/12/2025" y convertirlos
-        text = re.sub(
-            r'(venc[e|é|en]|caduc[a|á|an]|expir[a|á|an])\s+el\s+(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})',
-            lambda m: f"{m.group(1)} el {format_single_date(m.group(2), m.group(3), m.group(4))}",
-            text
-        )
+        # Patrón único optimizado
+        text = re.sub(r'(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})', replace_date, text)
         
         return text
         
@@ -299,68 +354,77 @@ def calculate_word_similarity(word1, word2):
     # Retornar promedio ponderado
     return (similarity1 * 0.6 + similarity2 * 0.4)
 
+_product_cache = {}
+
 def extract_product_from_command(command):
-    """Extraer nombre de producto del comando de voz - MEJORADO"""
+    """Extraer nombre de producto - OPTIMIZADO con caché"""
     try:
         if not command:
             return None
         
         command_lower = command.lower().strip()
+        
+        # ⭐ Revisar caché primero
+        if command_lower in _product_cache:
+            print(f"📦 Producto desde caché: '{_product_cache[command_lower]}'")
+            return _product_cache[command_lower]
+        
         print(f"🔍 Buscando producto en: '{command_lower}'")
         
-        # MAPEO MEJORADO DE PRODUCTOS CON MÁS VARIANTES
+        # ⭐ MEJORA: Diccionario optimizado con menos variantes (las más comunes)
         product_variants = {
-            "Leche": ["leche", "leches", "lácteo", "lacteo", "lechería"],
-            "Pan": ["pan", "panes", "panadería", "bollo", "bollos"],
-            "Galletas": ["galletas", "galleta", "cookie", "cookies", "bizcocho"],
-            "Arroz": ["arroz", "arroces", "grano"],
-            "Atún": ["atún", "atun", "atunes", "lata de atún", "latas de atún", "atún enlatado"],
-            "Refresco": ["refresco", "refrescos", "gaseosa", "soda", "bebida gaseosa"],
-            "Agua": ["agua", "aguas", "botella de agua", "agua embotellada"],
-            "Café": ["café", "cafe", "cafés", "cafecito"],
-            "Huevos": ["huevos", "huevo", "docena de huevos", "huevito"],
-            "Azúcar": ["azúcar", "azucar", "endulzante", "dulce"],
-            "Frijoles": ["frijoles", "frijol", "porotos", "judías"],
-            "Aceite": ["aceite", "aceites", "aceite vegetal", "aceite de cocina"],
-            "Sal": ["sal", "sales", "sal de mesa"],
-            "Jabón": ["jabón", "jabon", "jabones", "jabón de baño"],
-            "Pasta": ["pasta", "pastas", "fideos", "espagueti", "macarrones"],
-            "Tomate": ["tomate", "tomates", "jitomate"],
-            "Cebolla": ["cebolla", "cebollas", "cebollín"],
-            "Papa": ["papa", "papas", "patatas", "patata"],
-            "Zanahoria": ["zanahoria", "zanahorias"],
-            "Pollo": ["pollo", "pollos", "pollo entero"],
-            "Carne": ["carne", "carnes", "carne de res", "bistec"],
-            "Yogurt": ["yogurt", "yogur", "yogures"],
-            "Mantequilla": ["mantequilla", "manteca", "margarina"],
-            "Queso": ["queso", "quesos", "quesillo"],
-            "Shampoo": ["shampoo", "champu", "champú", "shampú"],
-            "Pasta Dental": ["pasta dental", "pasta de dientes", "crema dental", "dentífrico"],
-            "Papel Higiénico": ["papel higiénico", "papel", "rollo de papel"],
-            "Detergente": ["detergente", "jabón en polvo", "detergente para ropa"],
-            "Servilletas": ["servilletas", "servilleta", "papel servilleta"],
-            "Cereal": ["cereal", "cereales", "cereal de desayuno"]
+            "Leche": ["leche", "leches"],
+            "Pan": ["pan", "panes"],
+            "Galletas": ["galletas", "galleta"],
+            "Arroz": ["arroz"],
+            "Atún": ["atún", "atun"],
+            "Refresco": ["refresco", "gaseosa"],
+            "Agua": ["agua"],
+            "Café": ["café", "cafe"],
+            "Huevos": ["huevos", "huevo"],
+            "Azúcar": ["azúcar", "azucar"],
+            "Frijoles": ["frijoles", "frijol"],
+            "Aceite": ["aceite"],
+            "Sal": ["sal"],
+            "Jabón": ["jabón", "jabon"],
+            "Pasta": ["pasta", "fideos"],
+            "Tomate": ["tomate"],
+            "Cebolla": ["cebolla"],
+            "Papa": ["papa", "papas"],
+            "Zanahoria": ["zanahoria"],
+            "Pollo": ["pollo"],
+            "Carne": ["carne"],
+            "Yogurt": ["yogurt", "yogur"],
+            "Mantequilla": ["mantequilla"],
+            "Queso": ["queso"],
+            "Shampoo": ["shampoo", "champú"],
+            "Pasta Dental": ["pasta dental", "crema dental"],
+            "Papel Higiénico": ["papel higiénico", "papel"],
+            "Detergente": ["detergente"],
+            "Servilletas": ["servilletas"],
+            "Cereal": ["cereal"]
         }
         
-        # BUSCAR COINCIDENCIAS EXACTAS PRIMERO
+        # BÚSQUEDA EXACTA PRIMERO (más rápido)
         for product_key, variants in product_variants.items():
             for variant in variants:
                 if variant in command_lower:
                     print(f"🎯 Producto encontrado: '{product_key}' (variante: '{variant}')")
+                    _product_cache[command_lower] = product_key
                     return product_key
         
-        # BÚSQUEDA POR PALABRAS CLAVE SI NO HAY COINCIDENCIA EXACTA
-        words = command_lower.split()
+        # ⭐ MEJORA: Búsqueda por palabras solo si no hubo coincidencia exacta
+        # Y solo para palabras de 4+ caracteres
+        words = [w for w in command_lower.split() if len(w) >= 4]
         for word in words:
             for product_key, variants in product_variants.items():
                 for variant in variants:
-                    # Verificar similitud
                     if word in variant or variant in word:
-                        if len(word) >= 3:  # Evitar coincidencias con palabras muy cortas
-                            print(f"🎯 Producto encontrado por palabra clave: '{product_key}' (palabra: '{word}')")
-                            return product_key
+                        print(f"🎯 Producto por palabra: '{product_key}' (palabra: '{word}')")
+                        _product_cache[command_lower] = product_key
+                        return product_key
         
-        print(f"❌ No se detectó producto específico en: '{command_lower}'")
+        print(f"❌ No se detectó producto específico")
         return None
         
     except Exception as e:
@@ -368,32 +432,41 @@ def extract_product_from_command(command):
         return None
 
 def extract_quantity_from_command(command):
-    """Extraer cantidad del comando de voz"""
+    """Extraer cantidad - OPTIMIZADO"""
     try:
-        # Buscar números directos
-        numbers = re.findall(r'\d+', command)
-        if numbers:
-            quantity = int(numbers[0])
-            print(f"🔢 Cantidad detectada (número): {quantity}")
-            return quantity
+        # ⭐ MEJORA: Buscar números primero con regex más específico
+        import re
         
-        # Palabras numéricas
+        # Buscar patrones como "10 unidades", "5 kilos", etc.
+        patterns = [
+            r'(\d+)\s*(?:unidades?|kilos?|litros?|paquetes?|latas?|cajas?|bolsas?)?',
+            r'(\d+)'
+        ]
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, command.lower())
+            if matches:
+                quantity = int(matches[0])
+                print(f"🔢 Cantidad detectada: {quantity}")
+                return quantity
+        
+        # Palabras numéricas (solo las más comunes)
         number_words = {
             'un': 1, 'una': 1, 'uno': 1,
             'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5,
             'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9,
-            'diez': 10, 'once': 11, 'doce': 12, 'docena': 12,
-            'quince': 15, 'veinte': 20, 'treinta': 30
+            'diez': 10, 'doce': 12, 'docena': 12,
+            'quince': 15, 'veinte': 20
         }
         
         words = command.lower().split()
         for word in words:
             if word in number_words:
                 quantity = number_words[word]
-                print(f"🔢 Cantidad detectada (palabra): {quantity}")
+                print(f"🔢 Cantidad (palabra): {quantity}")
                 return quantity
         
-        print(f"🔢 Sin cantidad específica, usando: 1")
+        print(f"🔢 Sin cantidad, usando: 1")
         return 1
         
     except Exception as e:
@@ -415,7 +488,7 @@ def parse_date_from_command(command):
         return None
 
 def extract_brand_from_command(command):
-    """EXTRAER MARCA del comando de voz"""
+    """Extraer marca - OPTIMIZADO"""
     try:
         if not command:
             return None
@@ -423,26 +496,28 @@ def extract_brand_from_command(command):
         command_lower = command.lower().strip()
         print(f"🔍 Buscando MARCA en: '{command_lower}'")
         
-        # Patrones comunes para marcas
-        # Busca palabras después de "marca", "de la marca", "marca:"
+        import re
+        
+        # ⭐ MEJORA: Patrones más específicos
         brand_patterns = [
             r'marca\s+(\w+)',
-            r'de\s+la\s+marca\s+(\w+)',
-            r'marca:\s*(\w+)',
-            r'fabricante\s+(\w+)',
+            r'de\s+(?:la\s+)?marca\s+(\w+)'
         ]
         
         for pattern in brand_patterns:
             match = re.search(pattern, command_lower)
             if match:
                 brand = match.group(1).strip().title()
-                # Verificar que no sea una palabra común de comando
-                common_words = {'agregar', 'añadir', 'vender', 'actualizar', 'stock', 'unidades'}
-                if brand.lower() not in common_words:
+                # ⭐ Lista de palabras a excluir (más completa)
+                excluded = {
+                    'agregar', 'añadir', 'vender', 'actualizar', 
+                    'stock', 'unidades', 'la', 'el', 'de', 'que'
+                }
+                if brand.lower() not in excluded and len(brand) >= 3:
                     print(f"🎯 Marca encontrada: '{brand}'")
                     return brand
         
-        print(f"⚠️ No se detectó marca en: '{command_lower}'")
+        print(f"⚠️ No se detectó marca")
         return None
         
     except Exception as e:
@@ -450,29 +525,27 @@ def extract_brand_from_command(command):
         return None
 
 def extract_expiry_date_from_command(command):
-    """EXTRAER FECHA DE VENCIMIENTO del comando de voz - VERSIÓN DEFINITIVA"""
+    """Extraer fecha de vencimiento - OPTIMIZADO"""
     try:
         if not command:
             return None
             
         command_lower = command.lower().strip()
-        print(f"🔍 Buscando FECHA DE VENCIMIENTO en: '{command_lower}'")
+        print(f"🔍 Buscando FECHA en: '{command_lower}'")
         
-        # Patrones mejorados y más flexibles
+        import re
+        from datetime import datetime
+        
+        # ⭐ MEJORA: Patrones más específicos en orden de prioridad
         date_patterns = [
-            # Formato numérico: 25/12/2025, 25-12-2025, 25.12.2025
-            # Acepta: vence, vencen, caduca, caducan, expira, expiran
-            r'(?:venc[e|é|en]|caduc[a|á|an]|expir[a|á|an]|fecha\s+de\s+vencimiento)(?:\s+el)?\s*(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4})',
+            # Formato DD/MM/YYYY o DD-MM-YYYY
+            (r'(?:venc[e|en]|caduc[a|an]|expir[a|an])[^\d]*(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})', 'numeric'),
             
-            # Formato texto: "25 de diciembre de 2025" o "25 de diciembre del 2025"
-            # Acepta: vence, vencen, caduca, caducan, expira, expiran + el/del
-            r'(?:venc[e|é|en]|caduc[a|á|an]|expir[a|á|an])(?:\s+el|\s+del)?\s*(\d{1,2})\s+de\s+([a-z]+)\s+(?:de\s+|del\s+)?(\d{4})',
+            # Formato "25 de diciembre de 2025"
+            (r'(?:venc[e|en]|caduc[a|an])[^\d]*(\d{1,2})\s+de\s+([a-záéíóú]+)\s+(?:de\s+|del\s+)?(\d{4})', 'text'),
             
-            # Muy flexible: encuentra cualquier fecha DD/MM/YYYY cerca de palabras de vencimiento
-            r'(?:venc[e|é|en]|caduc[a|á|an]|expir[a|á|an]).*?(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4})',
-            
-            # Fallback: busca mes escrito completo
-            r'(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\s+(?:de\s+|del\s+)?(\d{4})'
+            # Formato flexible para cualquier fecha cercana
+            (r'(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})', 'numeric_loose')
         ]
         
         months = {
@@ -481,48 +554,49 @@ def extract_expiry_date_from_command(command):
             'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
         }
         
-        for pattern in date_patterns:
+        for pattern, format_type in date_patterns:
             match = re.search(pattern, command_lower)
             if match:
-                groups = match.groups()
-                
-                # Formato numérico directo
-                if len(groups) == 1:
-                    date_str = groups[0]
-                    try:
-                        # Detectar separador
-                        sep = '/' if '/' in date_str else '-' if '-' in date_str else '.' if '.' in date_str else '/'
-                        parts = date_str.split(sep)
-                        
-                        if len(parts) == 3:
-                            day = parts[0].zfill(2)
-                            month = parts[1].zfill(2)
-                            year = parts[2]
-                            if len(year) == 2:
-                                year = "20" + year
-                            formatted_date = f"{day}/{month}/{year}"
-                            print(f"✅ Fecha numérica encontrada: '{formatted_date}'")
-                            return formatted_date
-                    except:
-                        continue
-                
-                # Formato texto con día, mes, año
-                elif len(groups) == 3:
-                    day = groups[0].zfill(2)
-                    month_text = groups[1].lower()
-                    year = groups[2]
+                try:
+                    groups = match.groups()
                     
-                    if month_text in months:
-                        month = months[month_text]
-                        formatted_date = f"{day}/{month}/{year}"
-                        print(f"✅ Fecha textual encontrada: '{formatted_date}'")
-                        return formatted_date
+                    if format_type == 'numeric' or format_type == 'numeric_loose':
+                        day = groups[0].zfill(2)
+                        month = groups[1].zfill(2)
+                        year = groups[2]
+                        if len(year) == 2:
+                            year = "20" + year
+                        
+                        # ⭐ Validación básica de fecha
+                        try:
+                            datetime.strptime(f"{day}/{month}/{year}", "%d/%m/%Y")
+                            formatted_date = f"{day}/{month}/{year}"
+                            print(f"✅ Fecha numérica: '{formatted_date}'")
+                            return formatted_date
+                        except ValueError:
+                            print(f"⚠️ Fecha inválida: {day}/{month}/{year}")
+                            continue
+                    
+                    elif format_type == 'text':
+                        day = groups[0].zfill(2)
+                        month_text = groups[1].lower()
+                        year = groups[2]
+                        
+                        if month_text in months:
+                            month = months[month_text]
+                            formatted_date = f"{day}/{month}/{year}"
+                            print(f"✅ Fecha textual: '{formatted_date}'")
+                            return formatted_date
+                
+                except Exception as e:
+                    print(f"⚠️ Error procesando fecha: {e}")
+                    continue
         
-        print(f"⚠️ No se detectó fecha de vencimiento en: '{command_lower}'")
+        print(f"⚠️ No se detectó fecha de vencimiento")
         return None
         
     except Exception as e:
-        print(f"❌ Error extrayendo fecha de vencimiento: {e}")
+        print(f"❌ Error extrayendo fecha: {e}")
         return None
 
 # ============================================
@@ -707,14 +781,16 @@ def process_voice_command_internal(command):
                     message = f"Nuevo producto agregado: {product_name.title()} marca {brand}, {quantity} unidades, vence el {expiry_date}"
                     product_id = new_product["id"]
                 
-                # Registrar actividad
+                # Registrar actividad CON MARCA Y FECHA
                 activities.insert(0, {
                     "time": get_current_time(),
                     "date": get_current_date(),
                     "fullDate": get_full_datetime(),
                     "text": message,
                     "type": "add",
-                    "product": existing_product['name'] if existing_product else product_name.title()
+                    "product": existing_product['name'] if existing_product else product_name.title(),
+                    "brand": brand,
+                    "expiryDate": expiry_date
                 })
                 
                 interactive_products.add(product_id)
@@ -731,7 +807,7 @@ def process_voice_command_internal(command):
             
             print(f"🔍 EXTRAÍDOS - Producto: '{product_name}', Cantidad: {quantity}, Marca: '{brand}'")
             
-            # VALIDACIÓN OBLIGATORIA: Verificar que TODOS los datos estén presentes
+            # VALIDACIÓN OBLIGATORIA
             missing_fields = []
             if not product_name:
                 missing_fields.append("nombre del producto")
@@ -741,7 +817,6 @@ def process_voice_command_internal(command):
                 missing_fields.append("marca")
             
             if missing_fields:
-                # Construir mensaje de error específico para ventas
                 if len(missing_fields) == 1:
                     error_msg = f"Falta el dato obligatorio para registrar la venta: {missing_fields[0]}"
                 else:
@@ -753,10 +828,10 @@ def process_voice_command_internal(command):
                 update_last_command(False, error_msg)
                 speak_response(error_msg)
             else:
-                # Todos los datos presentes - Buscar producto específico con marca
+                # Buscar producto específico con marca
                 product = next((p for p in inventory if p["name"].lower() == product_name.lower() and p.get("brand", "").lower() == brand.lower()), None)
                 
-                # Si no encuentra con marca exacta, busca solo por nombre (compatibilidad hacia atrás)
+                # Si no encuentra con marca exacta, busca solo por nombre (compatibilidad)
                 if not product:
                     product = next((p for p in inventory if p["name"].lower() == product_name.lower()), None)
                 
@@ -772,13 +847,15 @@ def process_voice_command_internal(command):
                     product["stock"] -= quantity
                     message = f"Venta registrada: {quantity} unidades de {product['name']} marca {brand}"
                     
+                    # ✅ REGISTRAR MARCA EN LA ACTIVIDAD
                     activities.insert(0, {
                         "time": get_current_time(),
                         "date": get_current_date(),
                         "fullDate": get_full_datetime(),
                         "text": message,
                         "type": "sell",
-                        "product": product['name']
+                        "product": product['name'],
+                        "brand": brand  # ✅ Marca incluida
                     })
                     
                     interactive_products.add(product["id"])
@@ -791,8 +868,9 @@ def process_voice_command_internal(command):
         elif any(word in command for word in ["actualiza", "actualizar", "cambia", "cambiar", "modifica"]):
             product_name = extract_product_from_command(command)
             quantity = extract_quantity_from_command(command)
+            brand = extract_brand_from_command(command)
             
-            print(f"🔍 Extraído - Producto: '{product_name}', Cantidad: {quantity}")
+            print(f"🔍 Extraído - Producto: '{product_name}', Cantidad: {quantity}, Marca: '{brand}'")
             
             if product_name and quantity:
                 product = next((p for p in inventory if p["name"].lower() == product_name.lower()), None)
@@ -800,15 +878,21 @@ def process_voice_command_internal(command):
                 if product:
                     old_stock = product["stock"]
                     product["stock"] = quantity
-                    message = f"Stock actualizado: {product['name']} de {old_stock} a {quantity} unidades"
                     
+                    # Si no se especificó marca, usar la del producto existente
+                    final_brand = brand if brand else product.get("brand", "Sin marca")
+                    
+                    message = f"Stock actualizado: {product['name']} marca {final_brand} de {old_stock} a {quantity} unidades"
+                    
+                    # ✅ REGISTRAR MARCA EN LA ACTIVIDAD
                     activities.insert(0, {
                         "time": get_current_time(),
                         "date": get_current_date(),
                         "fullDate": get_full_datetime(),
                         "text": message,
                         "type": "update",
-                        "product": product['name']
+                        "product": product['name'],
+                        "brand": final_brand  # ✅ Marca incluida
                     })
                     
                     interactive_products.add(product["id"])
@@ -854,6 +938,30 @@ def process_voice_command_internal(command):
                 error_msg = "No entendí de qué producto quieres saber el stock. Ejemplo: cuánto stock hay de galletas"
                 update_last_command(False, error_msg)
                 speak_response(error_msg)
+        # ============================================
+        # COMANDO: APAGAR SISTEMA GWEN
+        # ============================================
+        elif any(word in command for word in ["apagar", "apágate", "apagate", "pagar", "pagate", "desactivar", "detener", "stop", "adiós", "adios", "chao", "bye"]):
+            message = "Sistema Gwen apagándose. Hasta pronto."
+            print(f"👋 {message}")
+            update_last_command(True, message)
+            speak_response(message)
+            
+            # Detener el sistema de voz después de hablar
+            def stop_system_delayed():
+                time.sleep(2)  # Esperar a que termine de hablar
+                global transcriber, is_processing
+                if transcriber:
+                    transcriber.stop_all()
+                    transcriber = None
+                is_processing = False
+                print("🔴 Sistema Gwen detenido completamente")
+                
+                # ⭐ NUEVO: Marcar que el sistema fue detenido por voz
+                update_last_command(True, "SYSTEM_STOPPED", {"action": "stop_voice_system"})
+            
+            threading.Thread(target=stop_system_delayed, daemon=True).start()
+            return
         
         # ============================================
         # COMANDO NO RECONOCIDO
@@ -933,8 +1041,9 @@ def get_interactive_products():
         
 @app.route("/api/alerts", methods=["GET"])
 def get_alerts():
-    """Obtener alertas de stock bajo"""
+    """Obtener alertas de stock bajo Y productos próximos a vencer"""
     try:
+        # Alertas de stock bajo
         low_stock_alerts = []
         for product in inventory:
             if product["stock"] <= product["minStock"]:
@@ -942,12 +1051,35 @@ def get_alerts():
                 low_stock_alerts.append({
                     "id": product["id"],
                     "name": product["name"],
+                    "brand": product.get("brand", "Sin marca"),
                     "stock": product["stock"],
                     "minStock": product["minStock"],
+                    "expiryDate": product.get("expiryDate"),
                     "urgency": urgency
                 })
         
+        # Alertas de vencimiento (30 días o menos)
         expiring_alerts = []
+        today_date = datetime.now()
+        
+        for product in inventory:
+            if product.get("expiryDate"):
+                try:
+                    expiry_date = datetime.strptime(product["expiryDate"], "%Y-%m-%d")
+                    days_until_expiry = (expiry_date - today_date).days
+                    
+                    if 0 < days_until_expiry <= 30:
+                        urgency = "CRÍTICO" if days_until_expiry <= 7 else "ALTO" if days_until_expiry <= 15 else "MEDIO"
+                        expiring_alerts.append({
+                            "id": product["id"],
+                            "name": product["name"],
+                            "brand": product.get("brand", "Sin marca"),
+                            "expiryDate": product["expiryDate"],
+                            "daysUntilExpiry": days_until_expiry,
+                            "urgency": urgency
+                        })
+                except:
+                    continue
         
         return jsonify({
             "lowStock": low_stock_alerts,
@@ -957,7 +1089,7 @@ def get_alerts():
     except Exception as e:
         print(f"❌ Error obteniendo alertas: {e}")
         return jsonify({"lowStock": [], "expiring": []})
-
+    
 @app.route("/api/inventory/add", methods=["POST"])
 def add_product():
     """Agregar producto al inventario"""
@@ -1011,36 +1143,42 @@ def sell_product():
         data = request.json
         product_name = data.get("name")
         quantity = data.get("quantity", 1)
+        brand = data.get("brand", "Sin marca")  # ✅ Obtener marca
         
         product = next((p for p in inventory if p["name"].lower() == product_name.lower()), None)
         
         if not product:
-            return jsonify({"success": False, "message": f"❌ Producto '{product_name}' no encontrado en el inventario"}), 404
+            return jsonify({"success": False, "message": f"❌ Producto '{product_name}' no encontrado"}), 404
         
         if product["stock"] < quantity:
-            return jsonify({"success": False, "message": f"❌ No hay suficiente stock de {product['name']}. Stock actual: {product['stock']} unidades"}), 400
+            return jsonify({"success": False, "message": f"❌ No hay suficiente stock"}), 400
         
         product["stock"] -= quantity
-        message = f"💰 Se registró la venta de {quantity} unidades de {product['name']}. Stock restante: {product['stock']} unidades"
         
+        # Si no se proporcionó marca, usar la del producto
+        final_brand = brand if brand != "Sin marca" else product.get("brand", "Sin marca")
+        
+        message = f"💰 Venta registrada: {quantity} unidades de {product['name']} marca {final_brand}"
+        
+        # ✅ REGISTRAR MARCA EN LA ACTIVIDAD
         activities.insert(0, {
             "time": get_current_time(),
             "date": get_current_date(),
             "fullDate": get_full_datetime(),
             "text": message,
             "type": "sell",
-            "product": product['name']
+            "product": product['name'],
+            "brand": final_brand  # ✅ Marca incluida
         })
         
         interactive_products.add(product["id"])
-
         threading.Thread(target=notify_sale, args=(product, quantity), daemon=True).start()
         
-        return jsonify({"success": True, "message": message, "inventory": inventory})
+        return jsonify({"success": True, "message": message})
     
     except Exception as e:
-        print(f"❌ Error registrando venta: {e}")
         return jsonify({"success": False, "message": str(e)})
+
         
 @app.route("/api/inventory/update", methods=["POST"])
 def update_stock():
@@ -1049,35 +1187,40 @@ def update_stock():
         data = request.json
         product_name = data.get("name")
         quantity = data.get("quantity")
+        brand = data.get("brand", "Sin marca")  # ✅ Obtener marca
         
         product = next((p for p in inventory if p["name"].lower() == product_name.lower()), None)
         
         if not product:
-            return jsonify({"success": False, "message": f"❌ Producto '{product_name}' no encontrado"}), 404
+            return jsonify({"success": False, "message": f"❌ Producto no encontrado"}), 404
         
         old_stock = product["stock"]
         product["stock"] = quantity
-        message = f"🔄 Se actualizó el stock de {product['name']} de {old_stock} a {quantity} unidades"
         
+        # Si no se proporcionó marca, usar la del producto
+        final_brand = brand if brand != "Sin marca" else product.get("brand", "Sin marca")
+        
+        message = f"🔄 Stock actualizado: {product['name']} marca {final_brand} de {old_stock} a {quantity} unidades"
+        
+        # ✅ REGISTRAR MARCA EN LA ACTIVIDAD
         activities.insert(0, {
             "time": get_current_time(),
             "date": get_current_date(),
             "fullDate": get_full_datetime(),
             "text": message,
             "type": "update",
-            "product": product['name']
+            "product": product['name'],
+            "brand": final_brand  # ✅ Marca incluida
         })
         
         interactive_products.add(product["id"])
-
         threading.Thread(target=notify_system_event, args=(message,), daemon=True).start()
         
-        return jsonify({"success": True, "message": message, "inventory": inventory})
+        return jsonify({"success": True, "message": message})
     
     except Exception as e:
-        print(f"❌ Error actualizando stock: {e}")
         return jsonify({"success": False, "message": str(e)})
-
+    
 @app.route("/api/activities", methods=["GET"])
 def get_activities():
     """Obtener historial de actividades"""
@@ -1362,6 +1505,75 @@ def notify_low_stock(product):
     except Exception as e:
         print(f"❌ Error en notify_low_stock: {e}")
         return False
+    
+def notify_expiring_product(product):
+    """Notificar cuando un producto está próximo a vencer (30 días)"""
+    try:
+        product_id = product["id"]
+        today = get_current_date()
+        
+        # ⭐ VERIFICACIÓN: ¿Ya se notificó este producto hoy?
+        if (product_id in product_expiry_notification_state and 
+            product_expiry_notification_state[product_id].get("last_notified_date") == today and
+            product_expiry_notification_state[product_id].get("notified_today") == True):
+            print(f"⏭️ {product['name']} vencimiento YA notificado hoy, OMITIENDO")
+            return False
+        
+        # Calcular días hasta vencimiento
+        expiry_date = datetime.strptime(product["expiryDate"], "%Y-%m-%d")
+        today_date = datetime.now()
+        days_until_expiry = (expiry_date - today_date).days
+        
+        # Determinar nivel de urgencia
+        if days_until_expiry <= 7:
+            urgency = "🔴 URGENTE"
+            title = "📅 PRODUCTO POR VENCER"
+            message = f"🔴 {product['name']} vence en {days_until_expiry} días - Fecha: {product['expiryDate']}"
+        elif days_until_expiry <= 15:
+            urgency = "🟡 IMPORTANTE"
+            title = "📅 Vencimiento Cercano"
+            message = f"🟡 {product['name']} vence en {days_until_expiry} días - Fecha: {product['expiryDate']}"
+        else:
+            urgency = "🟢 AVISO"
+            title = "📅 Próximo a Vencer"
+            message = f"🟢 {product['name']} vence en {days_until_expiry} días - Fecha: {product['expiryDate']}"
+
+        print(f"📅 ENVIANDO NOTIFICACIÓN DE VENCIMIENTO: {product['name']}")
+        
+        # Guardar en historial
+        notification = {
+            "id": len(notifications_history) + 1,
+            "title": title,
+            "message": message,
+            "type": "expiry",
+            "product_id": product_id,
+            "brand": product.get("brand", "Sin marca"),
+            "expiryDate": product["expiryDate"],
+            "urgency": urgency,
+            "time": get_current_time(),
+            "date": today,
+            "timestamp": time.time(),
+            "viewed": False
+        }
+        notifications_history.insert(0, notification)
+        
+        # ⭐ MARCAR COMO NOTIFICADO HOY
+        product_expiry_notification_state[product_id] = {
+            "last_notified_date": today,
+            "notified_today": True,
+            "product_name": product["name"]
+        }
+        
+        # Mantener solo las últimas 50 notificaciones
+        if len(notifications_history) > 50:
+            notifications_history.pop()
+            
+        print(f"✅ Notificación de vencimiento ENVIADA: {product['name']}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error en notify_expiring_product: {e}")
+        return False
 
 # ============================================
 # ENDPOINTS API PARA NOTIFICACIONES (POLLING)
@@ -1395,7 +1607,19 @@ def subscribe_push():
     except Exception as e:
         print(f"❌ Error en suscripción: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
-
+    
+@app.route("/api/notifications/mark-all-read", methods=["POST"])
+def mark_all_notifications_read():
+    """Marcar todas las notificaciones como leídas (sin afectar product_notification_state)"""
+    try:
+        for notification in notifications_history:
+            notification["viewed"] = True
+        print("✅ Todas las notificaciones marcadas como leídas")
+        return jsonify({"success": True, "message": "Notificaciones marcadas como leídas"})
+    except Exception as e:
+        print(f"❌ Error marcando notificaciones como leídas: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+    
 @app.route("/api/notifications/unsubscribe", methods=["POST"])
 def unsubscribe_push():
     """Desuscripción simulada"""
@@ -1465,20 +1689,27 @@ def get_notifications_history():
         print(f"❌ Error obteniendo historial: {e}")
         return jsonify([])
 
+# Remplaza esta función en app.py
+# ============================================
+# CAMBIOS EN app.py - REEMPLAZAR ESTAS FUNCIONES
+# ============================================
+
+# 1. REEMPLAZAR la función get_new_notifications:
 @app.route("/api/notifications/new", methods=["GET"])
 def get_new_notifications():
-    """Obtener solo notificaciones no vistas (polling optimizado)"""
+    """Obtener solo notificaciones no vistas Y marcarlas como vistas automáticamente"""
     try:
         # 1. Filtrar notificaciones que NO han sido vistas
         new_notifications = [n for n in notifications_history if not n.get("viewed", False)]
         
-        # 2. Marcar SOLO estas notificaciones como vistas (sin resetear las demás)
-        for n in new_notifications:
-            n["viewed"] = True
+        # 2. ⭐ CAMBIO CRÍTICO: Marcarlas como vistas INMEDIATAMENTE
+        #    Esto previene que se muestren múltiples veces
+        for notification in new_notifications:
+            notification["viewed"] = True
         
         # 3. Log para depuración
         if new_notifications:
-            print(f"📢 {len(new_notifications)} notificaciones nuevas enviadas al frontend")
+            print(f"📢 {len(new_notifications)} notificaciones nuevas enviadas (ahora marcadas como vistas)")
         
         return jsonify({
             "success": True,
@@ -1490,43 +1721,89 @@ def get_new_notifications():
         print(f"❌ Error obteniendo notificaciones nuevas: {e}")
         return jsonify({"success": False, "notifications": [], "count": 0})
 
+
+# 2. AGREGAR nueva función para resetear el badge cuando se abre la pestaña:
+@app.route("/api/notifications/mark-viewed", methods=["POST"])
+def mark_notifications_viewed():
+    """Marcar notificaciones específicas como vistas"""
+    try:
+        data = request.json
+        notification_ids = data.get("ids", [])
+        
+        for notification in notifications_history:
+            if notification["id"] in notification_ids:
+                notification["viewed"] = True
+        
+        print(f"✅ {len(notification_ids)} notificaciones marcadas como vistas")
+        return jsonify({"success": True})
+        
+    except Exception as e:
+        print(f"❌ Error marcando notificaciones: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 # ============================================
 # VERIFICACIÓN PERIÓDICA DE STOCK BAJO - VERSIÓN DEFINITIVA
 # ============================================
 
 def check_low_stock_periodically():
-    """Verificar stock bajo - SOLUCIÓN DEFINITIVA SIN REPETICIONES"""
-    print("🔔 SISTEMA DE MONITORIZACIÓN INICIADO (cada 1 minuto)")
+    """Verificar stock bajo Y productos próximos a vencer - VERSIÓN DEFINITIVA"""
+    print("🔍 SISTEMA DE MONITORIZACIÓN INICIADO (cada 1 minuto)")
     
     while True:
         try:
             today = get_current_date()
-            print(f"\n🔍 Verificación de stock: {datetime.now().strftime('%H:%M:%S')}")
+            print(f"\n🔍 Verificación periódica: {datetime.now().strftime('%H:%M:%S')}")
             
-            # Limpiar estado si es un nuevo día
+            # 1. Limpiar estado de notificaciones de stock si es un nuevo día
             for product_id, state in list(product_notification_state.items()):
                 if state.get("last_notified_date") != today:
                     product_notification_state[product_id]["notified_today"] = False
-                    print(f"🔄 Reset diario: {state.get('product_name', 'Producto ' + str(product_id))}")
+                    print(f"🔄 Reset diario stock: {state.get('product_name', 'Producto ' + str(product_id))}")
             
-            # Verificar productos con stock bajo
-            products_to_notify = []
-            for product in inventory:
-                if product["stock"] <= product["minStock"]:
-                    products_to_notify.append(product)
+            # 2. Limpiar estado de notificaciones de vencimiento si es un nuevo día
+            for product_id, state in list(product_expiry_notification_state.items()):
+                if state.get("last_notified_date") != today:
+                    product_expiry_notification_state[product_id]["notified_today"] = False
+                    print(f"🔄 Reset diario vencimiento: {state.get('product_name', 'Producto ' + str(product_id))}")
             
-            # Enviar notificaciones solo para productos no notificados hoy
-            new_notifications_sent = 0
-            for product in products_to_notify:
+            # 3. Verificar productos con stock bajo
+            low_stock_products = [p for p in inventory if p["stock"] <= p["minStock"]]
+            low_stock_notifications_sent = 0
+            for product in low_stock_products:
                 if notify_low_stock(product):
-                    new_notifications_sent += 1
+                    low_stock_notifications_sent += 1
             
-            if new_notifications_sent > 0:
-                print(f"✅ {new_notifications_sent} notificaciones NUEVAS enviadas")
-            elif len(products_to_notify) > 0:
-                print(f"ℹ️ {len(products_to_notify)} productos con stock bajo (ya notificados)")
-            else:
-                print("✅ Todo el stock está en niveles adecuados")
+            # 4. Verificar productos próximos a vencer (30 días)
+            today_date = datetime.now()
+            expiring_products = []
+            for product in inventory:
+                if product.get("expiryDate"):
+                    try:
+                        expiry_date = datetime.strptime(product["expiryDate"], "%Y-%m-%d")
+                        days_until_expiry = (expiry_date - today_date).days
+                        
+                        # Notificar si faltan 30 días o menos
+                        if 0 < days_until_expiry <= 30:
+                            expiring_products.append(product)
+                    except:
+                        continue
+            
+            expiry_notifications_sent = 0
+            for product in expiring_products:
+                if notify_expiring_product(product):
+                    expiry_notifications_sent += 1
+            
+            # 5. Resumen
+            if low_stock_notifications_sent > 0:
+                print(f"✅ {low_stock_notifications_sent} notificaciones de STOCK BAJO enviadas")
+            
+            if expiry_notifications_sent > 0:
+                print(f"✅ {expiry_notifications_sent} notificaciones de VENCIMIENTO enviadas")
+            
+            if low_stock_notifications_sent == 0 and expiry_notifications_sent == 0:
+                if len(low_stock_products) > 0 or len(expiring_products) > 0:
+                    print(f"ℹ️ {len(low_stock_products)} stock bajo + {len(expiring_products)} por vencer (ya notificados)")
+                else:
+                    print("✅ Todo en orden: stock adecuado y sin vencimientos próximos")
                 
         except Exception as e:
             print(f"❌ Error en verificación periódica: {e}")
@@ -1559,3 +1836,4 @@ if __name__ == "__main__":
         threaded=True,
         use_reloader=False  # Desactivar reloader para evitar duplicación de hilos
     )
+

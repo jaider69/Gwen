@@ -1408,3 +1408,275 @@ h1 {
     border-radius: 6px;
     display: inline-block;
 }
+/* === BADGE DE NOTIFICACIONES - SOLUCIÓN DEFINITIVA === */
+#notificationsTabBtn {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    background: #f44336 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: none !important; /* IMPORTANTE: Oculto por defecto */
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+    z-index: 9999 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+/* Clase para mostrar el badge */
+.notification-badge.show {
+    display: inline-flex !important;
+    animation: pulse-badge 0.5s ease;
+}
+
+@keyframes pulse-badge {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Para móviles */
+@media (max-width: 768px) {
+    .notification-badge {
+        top: -5px !important;
+        right: -5px !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 10px !important;
+    }
+}
+/* === BADGE DE NOTIFICACIONES - SOLUCIÓN DEFINITIVA === */
+#notificationsTabBtn {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    background: #f44336 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+    line-height: 24px !important;
+    text-align: center !important;
+    z-index: 9999 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    display: none; /* Oculto por defecto */
+}
+
+/* ESTA CLASE MUESTRA EL BADGE */
+.notification-badge.show {
+    display: inline-block !important;
+    animation: pulse-badge 0.5s ease;
+}
+
+@keyframes pulse-badge {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Para móviles */
+@media (max-width: 768px) {
+    .notification-badge {
+        top: -5px !important;
+        right: -5px !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Añadir al final de recorder.css */
+
+.history-brand, .activity-brand {
+    font-weight: 600;
+    color: #667eea;
+    margin: 4px 0;
+}
+
+.history-expiry {
+    background: #fff3cd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+.product-brand {
+    font-size: 13px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.product-expiry {
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #fff3cd;
+    border-radius: 6px;
+    display: inline-block;
+    color: #ff9800;
+}
+
+/* ============================================
+   AÑADIR AL FINAL DE recorder.css
+   ============================================ */
+
+/* === MARCA DEL PRODUCTO === */
+.product-brand {
+    font-size: 13px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Marca en productos interactivos (fondo morado) */
+.product-card.interactive .product-brand {
+    color: rgba(255,255,255,0.95);
+}
+
+/* === FECHA DE VENCIMIENTO DEL PRODUCTO === */
+.product-expiry {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 6px 10px;
+    background: #fff3cd;
+    border-radius: 8px;
+    display: inline-block;
+    color: #ff9800;
+    border: 1px solid #ffd54f;
+}
+
+/* Fecha de vencimiento en productos interactivos */
+.product-card.interactive .product-expiry {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* === MARCA Y FECHA EN HISTORIAL === */
+.history-brand {
+    font-weight: 600;
+    color: #667eea;
+    margin: 6px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-expiry {
+    background: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 600;
+    margin: 6px 0;
+    font-size: 12px;
+    color: #ff9800;
+    border: 1px solid #ffd54f;
+}
+
+/* === MARCA Y FECHA EN ACTIVIDADES === */
+.activity-brand {
+    font-weight: 600;
+    color: #667eea;
+    margin: 6px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.activity-expiry {
+    background: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 600;
+    margin: 6px 0;
+    font-size: 12px;
+    color: #ff9800;
+    border: 1px solid #ffd54f;
+}
+
+/* === MARCA Y FECHA EN NOTIFICACIONES === */
+.notification-brand {
+    font-size: 12px;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.notification-expiry {
+    background: #fff3cd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 600;
+    margin: 4px 0;
+    font-size: 12px;
+    color: #ff9800;
+    border: 1px solid #ffd54f;
+}
+
+/* === MARCA Y FECHA EN ALERTAS === */
+.alert-brand {
+    color: #667eea;
+    font-weight: 600;
+    margin: 6px 0;
+    font-size: 13px;
+}
+
+.alert-expiry {
+    background: #fff3cd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 600;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #ff9800;
+    border: 1px solid #ffd54f;
+}
+
+/* === MARCA EN ACTIVIDADES DEL INICIO === */
+.activity-brand {
+    font-weight: 600;
+    color: #667eea;
+    margin: 4px 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
